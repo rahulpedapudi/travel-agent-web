@@ -26,7 +26,7 @@ export const ChatContainer = () => {
               {/* Hero Section */}
               <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <h1 className="font-serif text-5xl md:text-6xl font-medium tracking-tight bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent pb-2">
-                  Welcome to TravelAgent
+                  Welcome to Traverse
                 </h1>
                 <p className="text-xl text-muted-foreground font-light">
                   Your personalized travel planning assistant.
@@ -60,7 +60,11 @@ export const ChatContainer = () => {
           ) : (
             <div className="p-4 md:p-8 space-y-6 max-w-3xl mx-auto w-full">
               {messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onSendMessage={sendUserMessage}
+                />
               ))}
               {isLoading && (
                 <div className="flex justify-start">

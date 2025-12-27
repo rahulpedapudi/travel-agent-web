@@ -113,7 +113,7 @@ export function AppSidebar({
         <SidebarHeader className="p-4 gap-4">
           <div className="flex items-center space-x-2 text-primary px-1">
             <span className="font-serif text-lg tracking-tight text-foreground">
-              TravelAgent
+              Traverse
             </span>
           </div>
           <div className="flex flex-col gap-2">

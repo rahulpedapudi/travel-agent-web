@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { sendMessage, clearSession } from "@/lib/api";
 import { v4 as uuidv4 } from "uuid";
+import type { UIComponent } from "@/types/ui";
 
 export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  ui?: UIComponent;
+  uiHandled?: boolean; // True if user has already responded to this UI
 }
 
 export const useChat = () => {
@@ -46,20 +49,36 @@ export const useChat = () => {
   }, [messages]);
 
   const addMessage = useCallback(
-    (role: "user" | "assistant", content: string) => {
+    (role: "user" | "assistant", content: string, ui?: UIComponent) => {
       const newMessage: Message = {
         id: uuidv4(),
         role,
         content,
         timestamp: new Date(),
+        ui,
+        uiHandled: false,
       };
       setMessages((prev) => [...prev, newMessage]);
     },
     []
   );
 
+  // Mark all pending UI components as handled when user sends a new message
+  const markUIAsHandled = useCallback(() => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.role === "assistant" && msg.ui && !msg.uiHandled
+          ? { ...msg, uiHandled: true }
+          : msg
+      )
+    );
+  }, []);
+
   const sendUserMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
+
+    // Mark previous UI components as handled before adding user message
+    markUIAsHandled();
 
     addMessage("user", content);
     setIsLoading(true);
@@ -73,7 +92,8 @@ export const useChat = () => {
         localStorage.setItem("chat_session_id", response.session_id);
       }
 
-      addMessage("assistant", response.response);
+      // Add assistant message with optional UI component
+      addMessage("assistant", response.response, response.ui);
     } catch (error) {
       console.error("Failed to send message:", error);
       addMessage(
