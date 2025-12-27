@@ -7,12 +7,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { MessageSquare, ChevronRight } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { MessageSquare, MoreHorizontal } from "lucide-react";
 import type { SidebarData } from "./types";
 
 export function NavRecentChats({
@@ -24,26 +19,26 @@ export function NavRecentChats({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <Collapsible defaultOpen className="group/collapsible">
-        <SidebarGroupLabel asChild>
-          <CollapsibleTrigger>
-            Recent Chats
-            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-          </CollapsibleTrigger>
-        </SidebarGroupLabel>
-        <CollapsibleContent>
-          <SidebarMenu>
-            {chats.map((chat) => (
-              <SidebarMenuItem key={chat.id}>
-                <SidebarMenuButton tooltip={chat.title}>
-                  <MessageSquare className="mr-2 h-4 w-4 opacity-70" />
-                  <span>{chat.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </CollapsibleContent>
-      </Collapsible>
+      <SidebarGroupLabel className="text-xs font-semibold text-white/50 uppercase tracking-widest px-4 mb-2">Recent Chats</SidebarGroupLabel>
+      <SidebarMenu>
+        {chats.map((chat) => (
+          <SidebarMenuItem key={chat.id}>
+            <SidebarMenuButton
+              tooltip={chat.title}
+              className="px-5 py-4 h-auto group-data-[collapsible=icon]:!size-14 group-data-[collapsible=icon]:!p-3 [&_svg]:!size-8"
+            >
+              <MessageSquare className="mr-3 h-3.5 w-3.5 opacity-70 group-data-[collapsible=icon]:!m-0" />
+              <span className="text-sm font-medium">{chat.title}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+        <SidebarMenuItem>
+          <SidebarMenuButton className="px-5 py-4 h-auto text-sidebar-foreground/70 group-data-[collapsible=icon]:!size-14 group-data-[collapsible=icon]:!p-3 [&_svg]:!size-8">
+            <MoreHorizontal className="text-sidebar-foreground/70 mr-3 h-4 w-4 group-data-[collapsible=icon]:!m-0" />
+            <span className="text-sm font-medium">More</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </SidebarGroup>
   );
 }
