@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
-import { FavoriteItem, TeamItem, TopicItem } from "@/components/sidebar-01/types";
+import type { FavoriteItem, TeamItem, TopicItem } from "@/components/sidebar-01/types";
 
 interface NavCollapsibleProps {
   favorites: FavoriteItem[];
