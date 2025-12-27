@@ -22,7 +22,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <SidebarTrigger className="-ml-2" />
           <span className="font-semibold">TravelAgent</span>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 h-[calc(100vh-4rem)] md:h-screen overflow-hidden">
+        <div className="flex flex-1 flex-col h-[calc(100vh-4rem)] md:h-screen overflow-hidden">
           {children}
         </div>
       </SidebarInset>

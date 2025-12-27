@@ -17,62 +17,64 @@ export const ChatContainer = () => {
   }, [messages, isLoading]);
 
   return (
-    <div className="flex flex-col h-full w-full max-w-5xl mx-auto relative">
-      {/* Messages Area - with specific "Empty State" styling when no messages */}
-      <main className="flex-1 overflow-y-auto w-full">
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 space-y-12">
-            {/* Hero Section */}
-            <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <h1 className="font-serif text-5xl md:text-6xl font-medium tracking-tight bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent pb-2">
-                Welcome to TravelAgent
-              </h1>
-              <p className="text-xl text-muted-foreground font-light">
-                Your personalized travel planning assistant.
-              </p>
-            </div>
-
-            {/* Quick Actions Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-              <QuickActionCard
-                icon="⚡"
-                title="Where to next?"
-                description="Show me the cheapest flights to London next week."
-                onClick={() =>
-                  sendUserMessage("Show me cheapest flights to London")
-                }
-              />
-              <QuickActionCard
-                icon="📍"
-                title="Planned Trips"
-                description="Check status of my upcoming trip to Paris."
-                onClick={() => sendUserMessage("Check my Paris trip status")}
-              />
-              <QuickActionCard
-                icon="💬"
-                title="Ask about travel"
-                description="What are the visa requirements for Japan?"
-                onClick={() => sendUserMessage("Visa requirements for Japan")}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="p-4 md:p-8 space-y-6 pb-24 max-w-3xl mx-auto w-full">
-            {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
-            ))}
-            {isLoading && (
-              <div className="flex justify-start">
-                <TypingIndicator />
+    <div className="h-full w-full relative overflow-hidden">
+      {/* Messages Area - Scrollable, leaving room for input */}
+      <main className="absolute inset-0 bottom-20 overflow-y-auto">
+        <div className="max-w-5xl mx-auto p-4">
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center min-h-full px-4 space-y-12 py-8">
+              {/* Hero Section */}
+              <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <h1 className="font-serif text-5xl md:text-6xl font-medium tracking-tight bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent pb-2">
+                  Welcome to TravelAgent
+                </h1>
+                <p className="text-xl text-muted-foreground font-light">
+                  Your personalized travel planning assistant.
+                </p>
               </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
+
+              {/* Quick Actions Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+                <QuickActionCard
+                  icon=""
+                  title="Where to next?"
+                  description="Show me the cheapest flights to London next week."
+                  onClick={() =>
+                    sendUserMessage("Show me cheapest flights to London")
+                  }
+                />
+                <QuickActionCard
+                  icon=""
+                  title="Planned Trips"
+                  description="Check status of my upcoming trip to Paris."
+                  onClick={() => sendUserMessage("Check my Paris trip status")}
+                />
+                <QuickActionCard
+                  icon=""
+                  title="Ask about travel"
+                  description="What are the visa requirements for Japan?"
+                  onClick={() => sendUserMessage("Visa requirements for Japan")}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 md:p-8 space-y-6 max-w-3xl mx-auto w-full">
+              {messages.map((msg) => (
+                <MessageBubble key={msg.id} message={msg} />
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <TypingIndicator />
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
       </main>
 
-      {/* Input Area - Centered and floated at bottom */}
-      <div className="absolute bottom-6 left-0 right-0 px-4 md:px-0 flex justify-center w-full z-20">
+      {/* Input Area - Fixed at very bottom */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-background z-1">
         <div className="w-full max-w-3xl">
           <ChatInput onSend={sendUserMessage} isLoading={isLoading} />
         </div>
