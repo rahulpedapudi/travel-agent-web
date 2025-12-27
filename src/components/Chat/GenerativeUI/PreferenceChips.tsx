@@ -3,7 +3,19 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { PreferenceChipsProps } from "@/types/ui";
+import type { PreferenceChipsProps, PreferenceOption } from "@/types/ui";
+
+// Default options when backend doesn't provide any
+const DEFAULT_OPTIONS: PreferenceOption[] = [
+  { id: "food", label: "🍜 Food & Dining", selected: false },
+  { id: "museums", label: "🏛️ Museums & Art", selected: false },
+  { id: "nature", label: "🌲 Nature & Outdoors", selected: false },
+  { id: "nightlife", label: "🌙 Nightlife", selected: false },
+  { id: "shopping", label: "🛍️ Shopping", selected: false },
+  { id: "history", label: "🏰 History & Culture", selected: false },
+  { id: "adventure", label: "🎢 Adventure", selected: false },
+  { id: "relaxation", label: "🧘 Relaxation", selected: false },
+];
 
 export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   options,
@@ -12,8 +24,12 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   max_selections = null,
   onSubmit,
 }) => {
+  // Use default options if none provided
+  const displayOptions =
+    options && options.length > 0 ? options : DEFAULT_OPTIONS;
+
   const [selected, setSelected] = React.useState<Set<string>>(
-    new Set(options.filter((o) => o.selected).map((o) => o.id))
+    new Set(displayOptions.filter((o) => o.selected).map((o) => o.id))
   );
 
   const toggleSelection = (id: string) => {
@@ -36,7 +52,7 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   };
 
   const handleSubmit = () => {
-    const selectedLabels = options
+    const selectedLabels = displayOptions
       .filter((o) => selected.has(o.id))
       .map((o) => o.label.replace(/^[\p{Emoji}\s]+/u, "").trim())
       .join(", ");
@@ -46,7 +62,7 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   return (
     <div className="mt-4 space-y-4">
       <div className="flex flex-wrap gap-2">
-        {options.map((option) => (
+        {displayOptions.map((option) => (
           <Button
             key={option.id}
             variant={selected.has(option.id) ? "default" : "outline"}

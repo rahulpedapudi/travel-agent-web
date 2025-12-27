@@ -5,13 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import type { CompanionSelectorProps } from "@/types/ui";
+import type { CompanionSelectorProps, CompanionOption } from "@/types/ui";
+
+// Default options when backend doesn't provide any
+const DEFAULT_OPTIONS: CompanionOption[] = [
+  { id: "solo", label: "Solo", icon: "👤" },
+  { id: "couple", label: "Couple", icon: "💑" },
+  { id: "family_kids", label: "Family with Kids", icon: "👨‍👩‍👧" },
+  { id: "family_adults", label: "Family (Adults)", icon: "👨‍👩‍👦‍👦" },
+  { id: "friends", label: "Friends", icon: "👥" },
+];
 
 export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   options,
-  show_kids_age_input = false,
+  show_kids_age_input = true,
   onSubmit,
 }) => {
+  // Use default options if none provided
+  const displayOptions =
+    options && options.length > 0 ? options : DEFAULT_OPTIONS;
+
   const [selected, setSelected] = React.useState<string | null>(null);
   const [kidsAges, setKidsAges] = React.useState<string>("");
   const [showKidsInput, setShowKidsInput] = React.useState(false);
@@ -30,7 +43,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   const handleSubmit = () => {
     if (!selected) return;
 
-    const option = options.find((o) => o.id === selected);
+    const option = displayOptions.find((o) => o.id === selected);
     if (!option) return;
 
     let response = option.label;
@@ -44,7 +57,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   return (
     <div className="mt-4 space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {options.map((option) => (
+        {displayOptions.map((option) => (
           <button
             key={option.id}
             onClick={() => handleSelect(option.id)}

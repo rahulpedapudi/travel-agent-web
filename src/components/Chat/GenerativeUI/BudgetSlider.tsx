@@ -6,11 +6,11 @@ import { Slider } from "@/components/ui/slider";
 import type { BudgetSliderProps } from "@/types/ui";
 
 export const BudgetSlider: React.FC<BudgetSliderProps> = ({
-  min,
-  max,
-  step,
-  currency,
-  presets = [],
+  min = 10000,
+  max = 500000,
+  step = 5000,
+  currency = "INR",
+  presets = ["Budget (₹10k-50k)", "Mid-range (₹50k-1.5L)", "Luxury (₹2L+)"],
   onSubmit,
 }) => {
   const [value, setValue] = React.useState<number[]>([(min + max) / 2]);
