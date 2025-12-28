@@ -121,7 +121,7 @@ export const Globe = () => {
         labelLat={(d: any) => d.lat}
         labelLng={(d: any) => d.lng}
         labelText={(d: any) => d.name}
-        labelSize={(d: any) => (selectedPlace ? 0 : 1.5)}
+        labelSize={(_d: any) => (selectedPlace ? 0 : 1.5)}
         labelDotRadius={0.5}
         labelColor={() => "rgba(255, 255, 255, 0.8)"}
         labelResolution={2}

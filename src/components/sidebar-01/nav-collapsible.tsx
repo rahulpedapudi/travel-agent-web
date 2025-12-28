@@ -13,7 +13,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ChevronDown } from "lucide-react";
-import type { FavoriteItem, TeamItem, TopicItem } from "@/components/sidebar-01/types";
+import type {
+  FavoriteItem,
+  TeamItem,
+  TopicItem,
+} from "@/components/sidebar-01/types";
 
 interface NavCollapsibleProps {
   favorites: FavoriteItem[];
@@ -33,8 +37,7 @@ export function NavCollapsible({
           <SidebarGroup>
             <SidebarGroupLabel
               asChild
-              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
+              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
               <CollapsibleTrigger>
                 Favorites
                 <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
@@ -48,8 +51,7 @@ export function NavCollapsible({
                       <SidebarMenuButton asChild>
                         <a href={item.href} className="flex items-center gap-3">
                           <div
-                            className={`h-3 w-3 rounded-[4px] ${item.color}`}
-                          ></div>
+                            className={`h-3 w-3 rounded-[4px] ${item.color}`}></div>
                           <span>{item.title}</span>
                         </a>
                       </SidebarMenuButton>
@@ -67,8 +69,7 @@ export function NavCollapsible({
           <SidebarGroup>
             <SidebarGroupLabel
               asChild
-              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
+              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
               <CollapsibleTrigger>
                 Teams
                 <ChevronDown className="ml-auto transition-transform group-data-[state=closed]/collapsible:rotate-0 group-data-[state=open]/collapsible:rotate-180" />
@@ -82,7 +83,7 @@ export function NavCollapsible({
                     return (
                       <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton>
-                          <Icon className="mr-2 h-4 w-4" />
+                          {<Icon className="mr-2 h-4 w-4" />}
                           {item.title}
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -100,8 +101,7 @@ export function NavCollapsible({
           <SidebarGroup>
             <SidebarGroupLabel
               asChild
-              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
+              className="text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
               <CollapsibleTrigger>
                 Topics
                 <ChevronDown className="ml-auto transition-transform group-data-[state=closed]/collapsible:rotate-0 group-data-[state=open]/collapsible:rotate-180" />
@@ -115,7 +115,7 @@ export function NavCollapsible({
                     return (
                       <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton>
-                          <Icon className="mr-2 h-4 w-4" />
+                          {<Icon className="mr-2 h-4 w-4" />}
                           {item.title}
                         </SidebarMenuButton>
                       </SidebarMenuItem>

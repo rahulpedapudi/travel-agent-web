@@ -1,4 +1,7 @@
-import type { ElementType } from "react";
+import type { ComponentType } from "react";
+
+// Icon type that accepts className prop
+type IconType = ComponentType<{ className?: string }>;
 
 export interface SidebarData {
   user: {
@@ -10,7 +13,7 @@ export interface SidebarData {
     id: string;
     title: string;
     url: string;
-    icon: ElementType;
+    icon: IconType;
     isActive?: boolean;
     items?: {
       title: string;
@@ -21,7 +24,7 @@ export interface SidebarData {
     id: string;
     title: string;
     url: string;
-    icon: ElementType;
+    icon: IconType;
   }[];
 }
 
@@ -35,11 +38,11 @@ export interface FavoriteItem {
 export interface TeamItem {
   id: string;
   title: string;
-  icon: ElementType;
+  icon: IconType;
 }
 
 export interface TopicItem {
   id: string;
   title: string;
-  icon: ElementType;
+  icon: IconType;
 }

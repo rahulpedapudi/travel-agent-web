@@ -32,12 +32,12 @@ import {
 // Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "techsprint-482415.firebaseapp.com",
-  projectId: "techsprint-482415",
-  storageBucket: "techsprint-482415.firebasestorage.app",
-  messagingSenderId: "1005251868180",
-  appId: "1:1005251868180:web:21c5726f7fa7fc81fa1901",
-  measurementId: "G-ZRMH8LPFCW",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase

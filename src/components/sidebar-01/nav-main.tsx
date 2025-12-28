@@ -6,7 +6,7 @@ interface NavItem {
   id: string;
   title: string;
   url: string;
-  icon?: React.ElementType;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 export function NavMain({ items }: { items: NavItem[] }) {
@@ -26,7 +26,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
             {Icon && (
               <div className="relative z-10 text-white/70 group-hover:text-teal-300 group-hover:scale-110 transition-all duration-300">
-                <Icon className="w-7 h-7 stroke-[1.5]" />
+                {<Icon className="w-7 h-7 stroke-[1.5]" />}
               </div>
             )}
             <span className="relative z-10 text-[13px] font-medium text-white/60 group-hover:text-white transition-colors">
