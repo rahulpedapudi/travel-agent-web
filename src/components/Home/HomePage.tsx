@@ -23,7 +23,7 @@ export const HomePage = () => {
 
                 {/* Top Header Area (Trigger + Title) */}
                 <div className="absolute top-4 left-4 z-20 flex items-center gap-4">
-                    <SidebarTrigger className="text-white hover:bg-white/20 border-0 opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                    <SidebarTrigger className="text-white hover:bg-white/20 border-0 md:opacity-0 md:hover:opacity-100 transition-opacity duration-300" />
 
                     <div className="flex flex-col z-20 pointer-events-none mt-6 ml-4">
                         <h1 className="text-5xl md:text-6xl font-serif text-white tracking-wide drop-shadow-lg">

@@ -39,6 +39,8 @@ export const Globe = () => {
                 const container = globeEl.current.renderer().domElement.parentElement;
                 if (container) {
                     setDimensions({ width: container.clientWidth, height: container.clientHeight });
+                } else {
+                    setDimensions({ width: window.innerWidth, height: window.innerHeight });
                 }
             } else {
                 setDimensions({ width: window.innerWidth, height: window.innerHeight });

@@ -3,12 +3,14 @@ import { ChatContainer } from "@/components/Chat/ChatContainer";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthPage } from "@/components/Auth/AuthPage";
 import { HomePage } from "@/components/Home/HomePage";
+import { PopularDestinations } from "@/components/Popular/PopularDestinations";
 
 function App() {
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
       <Route path="/home" element={<HomePage />} />
+      <Route path="/popular" element={<PopularDestinations />} />
       <Route
         path="/"
         element={

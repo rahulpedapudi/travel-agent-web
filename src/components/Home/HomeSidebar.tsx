@@ -42,6 +42,12 @@ const data = {
             icon: IconPlaneDeparture,
         },
         {
+            id: "popular",
+            title: "Popular Destinations",
+            url: "/popular",
+            icon: IconCompass,
+        },
+        {
             id: "history",
             title: "My History",
             url: "#",
