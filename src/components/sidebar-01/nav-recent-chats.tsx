@@ -1,5 +1,4 @@
-"use client";
-
+import { Link } from "react-router-dom";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -24,11 +23,14 @@ export function NavRecentChats({
         {chats.map((chat) => (
           <SidebarMenuItem key={chat.id}>
             <SidebarMenuButton
+              asChild
               tooltip={chat.title}
               className="px-5 py-4 h-auto group-data-[collapsible=icon]:!size-14 group-data-[collapsible=icon]:!p-3 [&_svg]:!size-8"
             >
-              <MessageSquare className="mr-3 h-3.5 w-3.5 opacity-70 group-data-[collapsible=icon]:!m-0" />
-              <span className="text-sm font-medium">{chat.title}</span>
+              <Link to={chat.url}>
+                <MessageSquare className="mr-3 h-3.5 w-3.5 opacity-70 group-data-[collapsible=icon]:!m-0" />
+                <span className="text-sm font-medium">{chat.title}</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/sidebar";
 import {
   IconCompass,
-  IconHistory,
   IconPlaneDeparture,
 } from "@tabler/icons-react";
 import { Plus, Search } from "lucide-react";
@@ -49,17 +48,13 @@ const data: SidebarData = {
         },
       ],
     },
+
+
     {
       id: "trips",
       title: "My Trips",
-      url: "#",
+      url: "/trips",
       icon: IconPlaneDeparture,
-    },
-    {
-      id: "history",
-      title: "My History",
-      url: "#",
-      icon: IconHistory,
     },
   ],
   recentChats: [

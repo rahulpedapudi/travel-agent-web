@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/sidebar";
 import {
     IconCompass,
-    IconHistory,
     IconPlaneDeparture,
 } from "@tabler/icons-react";
 import { Plus, Search } from "lucide-react";
@@ -38,7 +37,7 @@ const data = {
         {
             id: "trips",
             title: "My Trips",
-            url: "#",
+            url: "/trips",
             icon: IconPlaneDeparture,
         },
         {
@@ -47,12 +46,7 @@ const data = {
             url: "/popular",
             icon: IconCompass,
         },
-        {
-            id: "history",
-            title: "My History",
-            url: "#",
-            icon: IconHistory,
-        },
+
     ],
     recentChats: [
         {
