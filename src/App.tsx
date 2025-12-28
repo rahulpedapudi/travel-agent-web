@@ -4,6 +4,8 @@ import { HomePage } from "@/components/Home/HomePage";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthPage } from "@/components/Auth/AuthPage";
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
+import { PopularDestinations } from "@/components/Popular/PopularDestinations";
+import { MyTripsPage } from "@/components/Trips/MyTripsPage";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           </ProtectedRoute>
         }>
         <Route path="/" element={<HomePage />} />
+        <Route path="/explore" element={<PopularDestinations />} />
+        <Route path="/trips" element={<MyTripsPage />} />
         <Route path="/c/:chatId" element={<ChatContainer />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

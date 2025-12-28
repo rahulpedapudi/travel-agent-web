@@ -112,10 +112,10 @@ export const Globe = () => {
         globeImageUrl={EARTH_DAY}
         bumpImageUrl={EARTH_NORMAL}
         // Atmosphere
-        atmosphereColor="#4fd1c5"
+        atmosphereColor="#4fa0d1"
         atmosphereAltitude={0.15}
         // Lighting
-        animateIn={true}
+        animateIn={false}
         // Labels (Places)
         labelsData={CITIES_DB}
         labelLat={(d: any) => d.lat}
@@ -129,7 +129,7 @@ export const Globe = () => {
         onLabelClick={(d: any) => handleGlobeClick({ lat: d.lat, lng: d.lng })}
         onGlobeClick={handleGlobeClick}
         // Background
-        backgroundColor="#020617" // match slate-950
+        backgroundColor="#0a0a0a" // match slate-950
       />
 
       {/* Selection Popup */}

@@ -124,6 +124,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-slate-950 text-white leading-relaxed;
+    @apply bg-zinc-950 text-white leading-relaxed;
   }
 }

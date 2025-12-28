@@ -6,7 +6,7 @@ export const HomePage = () => {
   const { isLoading, sendUserMessage } = useChatContext();
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-slate-950">
+    <div className="relative w-full h-full overflow-hidden bg-zinc-950">
       {/* 3D Background */}
       <div className="absolute inset-0 z-0">
         <Globe />

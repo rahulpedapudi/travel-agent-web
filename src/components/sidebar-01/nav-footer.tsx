@@ -13,9 +13,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { LogOut, Settings, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { Settings, LogOut, User } from "lucide-react";
 
 export function NavFooter() {
   const { user, logout } = useAuth();
@@ -55,27 +55,32 @@ export function NavFooter() {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center">
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:!p-0">
+                <Settings className="h-5 w-5" />
+                <span className="group-data-[collapsible=icon]:hidden font-medium">
+                  Settings & help
+                </span>
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-56 rounded-lg bg-black/60 backdrop-blur-2xl border border-white/10 text-primary-foreground"
+              side="bottom"
+              align="end"
+              sideOffset={4}>
+              <div className="flex items-center gap-2 p-2 border-b border-white/10 mb-1">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={avatarUrl} alt={displayName} />
                   <AvatarFallback className="rounded-lg">
                     {getInitials(displayName)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{displayName}</span>
                   <span className="truncate text-xs text-muted-foreground">
                     {displayEmail}
                   </span>
                 </div>
-                <Settings className="ml-auto size-6 group-data-[collapsible=icon]:hidden" />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-black/60 backdrop-blur-2xl border border-white/10 text-primary-foreground"
-              side="bottom"
-              align="end"
-              sideOffset={4}>
+              </div>
               <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
                 Profile

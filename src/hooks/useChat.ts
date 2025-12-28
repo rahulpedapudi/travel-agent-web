@@ -81,6 +81,7 @@ export const useChat = () => {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const streamingMessageIdRef = useRef<string | null>(null);
   const isFirstMessageRef = useRef<boolean>(true);
+  const isCreatingChatRef = useRef<boolean>(false);
 
   // Router hooks
   const navigate = useNavigate();
@@ -95,13 +96,19 @@ export const useChat = () => {
     if (streamingMessageIdRef.current) return;
 
     if (urlChatId) {
+      // If we were creating a chat and now have an ID, we're done
+      if (isCreatingChatRef.current) {
+        isCreatingChatRef.current = false;
+      }
+
       // If URL has ID and it's different from current, load it
       if (urlChatId !== chatHistory.currentChatId) {
         chatHistory.loadChatMessages(urlChatId);
       }
     } else {
       // If URL is empty, ensure we're in "new chat" state
-      if (chatHistory.currentChatId) {
+      // BUT, if we are in process of creating a chat (awaiting nav), don't clear state!
+      if (chatHistory.currentChatId && !isCreatingChatRef.current) {
         chatHistory.clearCurrentChat();
       }
     }
@@ -196,9 +203,11 @@ export const useChat = () => {
     // Get or create chat
     let chatId = chatHistory.currentChatId;
     if (!chatId) {
+      isCreatingChatRef.current = true;
       chatId = await chatHistory.createChat();
       if (!chatId) {
         console.error("Failed to create chat");
+        isCreatingChatRef.current = false;
         return;
       }
       // Navigate to the new chat URL silently (replace to avoid back button issues if needed, or push)

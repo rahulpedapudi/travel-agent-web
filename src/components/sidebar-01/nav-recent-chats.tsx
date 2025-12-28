@@ -34,7 +34,7 @@ export function NavRecentChats({
   if (isLoading) {
     return (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+        <SidebarGroupLabel>Chats</SidebarGroupLabel>
         <div className="flex items-center justify-center py-4">
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
         </div>
@@ -45,7 +45,7 @@ export function NavRecentChats({
   if (!chats?.length) {
     return (
       <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-        <SidebarGroupLabel>Recent Chats</SidebarGroupLabel>
+        <SidebarGroupLabel>Chats</SidebarGroupLabel>
         <div className="px-2 py-3 text-xs text-muted-foreground">
           No conversations yet
         </div>
@@ -69,7 +69,7 @@ export function NavRecentChats({
       <Collapsible defaultOpen className="group/collapsible">
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger>
-            Recent Chats
+            Chats
             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
           </CollapsibleTrigger>
         </SidebarGroupLabel>
