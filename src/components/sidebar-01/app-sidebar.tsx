@@ -145,7 +145,7 @@ export function AppSidebar({
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-sidebar-border">
-          <NavFooter user={data.user} />
+          <NavFooter />
         </SidebarFooter>
       </Sidebar>
 

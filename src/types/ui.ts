@@ -88,19 +88,37 @@ export interface RatingFeedbackUI extends UIComponentBase {
 
 // Itinerary Card
 export interface ItineraryActivity {
-  time: string;
+  start_time: string;
+  end_time?: string;
+  duration: string;
   title: string;
   location: string;
-  duration: string;
   type: string;
-  notes?: string;
+  description?: string;
+  notes?: string[];
+  travel_duration?: string;
+  travel_method?: string;
+  travel_note?: string;
 }
 
-export interface ItineraryCardProps {
+// Single day itinerary
+export interface ItineraryDay {
   day_number: number;
   date: string;
-  theme: string;
+  theme?: string;
   activities: ItineraryActivity[];
+}
+
+// Props can be single day OR multi-day (with days array)
+export interface ItineraryCardProps {
+  // Single day format (backwards compatible)
+  day_number?: number;
+  date?: string;
+  theme?: string;
+  activities?: ItineraryActivity[];
+  // Multi-day format
+  days?: ItineraryDay[];
+  // Common
   allow_actions?: boolean;
   onSubmit?: (value: string) => void;
 }

@@ -38,10 +38,42 @@ export interface StreamTokenEvent {
   text: string;
 }
 
+export interface StreamThinkingEvent {
+  type: "thinking";
+  message: string;
+  tool?: string;
+}
+
+// Task tracking types
+export interface PlanTask {
+  id: string;
+  label: string;
+  status: "pending" | "in_progress" | "completed";
+}
+
+export interface StreamPlanEvent {
+  type: "plan";
+  tasks: PlanTask[];
+}
+
+export interface StreamTaskStartEvent {
+  type: "task_start";
+  taskId: string;
+  label?: string;
+}
+
+export interface StreamTaskCompleteEvent {
+  type: "task_complete";
+  taskId: string;
+}
+
 export interface StreamDoneEvent {
   type: "done";
   session_id: string;
   ui?: UIComponent;
+  // Text content can come from various fields
+  response?: string;
+  user_preferences_introduction?: string;
 }
 
 export interface StreamErrorEvent {
@@ -49,21 +81,41 @@ export interface StreamErrorEvent {
   message: string;
 }
 
-export type StreamEvent = StreamTokenEvent | StreamDoneEvent | StreamErrorEvent;
+export type StreamEvent =
+  | StreamTokenEvent
+  | StreamThinkingEvent
+  | StreamPlanEvent
+  | StreamTaskStartEvent
+  | StreamTaskCompleteEvent
+  | StreamDoneEvent
+  | StreamErrorEvent;
 
 // Streaming chat function
 export const streamChat = async (
   message: string,
-  sessionId: string | null,
+  authToken: string | null,
   onToken: (text: string) => void,
+  onThinking: (message: string, tool?: string) => void,
   onComplete: (data: StreamDoneEvent) => void,
-  onError: (error: string) => void
+  onError: (error: string) => void,
+  onPlan?: (tasks: PlanTask[]) => void,
+  onTaskStart?: (taskId: string, label?: string) => void,
+  onTaskComplete?: (taskId: string) => void
 ): Promise<void> => {
   try {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Add auth token if available
+    if (authToken) {
+      headers["Authorization"] = `Bearer ${authToken}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}/chat/stream`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, session_id: sessionId }),
+      headers,
+      body: JSON.stringify({ message }),
     });
 
     if (!response.ok) {
@@ -92,9 +144,18 @@ export const streamChat = async (
         if (line.startsWith("data: ")) {
           try {
             const data = JSON.parse(line.slice(6)) as StreamEvent;
+            console.log("[API] SSE Event:", data);
 
             if (data.type === "token") {
               onToken(data.text);
+            } else if (data.type === "thinking") {
+              onThinking(data.message, data.tool);
+            } else if (data.type === "plan" && onPlan) {
+              onPlan(data.tasks);
+            } else if (data.type === "task_start" && onTaskStart) {
+              onTaskStart(data.taskId, data.label);
+            } else if (data.type === "task_complete" && onTaskComplete) {
+              onTaskComplete(data.taskId);
             } else if (data.type === "done") {
               onComplete(data);
             } else if (data.type === "error") {

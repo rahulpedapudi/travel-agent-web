@@ -3,9 +3,11 @@ import { useChat } from "@/hooks/useChat";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
+import { TaskList } from "./TaskList";
 
 export const ChatContainer = () => {
-  const { messages, isLoading, sendUserMessage } = useChat();
+  const { messages, isLoading, thinkingMessage, tasks, sendUserMessage } =
+    useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -14,7 +16,7 @@ export const ChatContainer = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading, thinkingMessage, tasks]);
 
   return (
     <div className="h-full w-full relative overflow-hidden">
@@ -66,7 +68,41 @@ export const ChatContainer = () => {
                   onSendMessage={sendUserMessage}
                 />
               ))}
-              {isLoading && (
+
+              {/* Task List - shows agent's plan */}
+              {tasks.length > 0 && <TaskList tasks={tasks} />}
+              {thinkingMessage && (
+                <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-bl-none p-4 shadow-sm max-w-[80%]">
+                    <div className="flex items-center gap-3">
+                      <div className="flex space-x-1">
+                        <span
+                          className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
+                          style={{ animationDelay: "0ms" }}
+                        />
+                        <span
+                          className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
+                          style={{ animationDelay: "150ms" }}
+                        />
+                        <span
+                          className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
+                          style={{ animationDelay: "300ms" }}
+                        />
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {thinkingMessage.message}
+                        {thinkingMessage.tool && (
+                          <span className="ml-1 text-xs opacity-60">
+                            ({thinkingMessage.tool})
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {/* Loading Indicator when no thinking message */}
+              {isLoading && !thinkingMessage && (
                 <div className="flex justify-start">
                   <TypingIndicator />
                 </div>

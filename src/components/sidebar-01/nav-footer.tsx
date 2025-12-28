@@ -14,16 +14,39 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { LogOut, Settings, User } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
-export function NavFooter({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
+export function NavFooter() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Get user initials for avatar fallback
+  const getInitials = (name?: string | null) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
-}) {
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  if (!user) return null;
+
+  const displayName = user.displayName || user.email?.split("@")[0] || "User";
+  const displayEmail = user.email || "";
+  const avatarUrl = user.photoURL || "";
+
   return (
     <SidebarFooter>
       <SidebarMenu>
@@ -34,28 +57,17 @@ export function NavFooter({
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarImage src={avatarUrl} alt={displayName} />
+                  <AvatarFallback className="rounded-lg">
+                    {getInitials(displayName)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold">{displayName}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {user.email}
+                    {displayEmail}
                   </span>
                 </div>
-                {/* User requested separate Settings icon, but commonly this is the user menu trigger. 
-                    I'll add the Settings icon OUTSIDE if they want it distinct, OR make this the row.
-                    The request: "remove the + icon... add setting icon there, and also add user name right next to the user avatar"
-                    
-                    Interpretation 1: 
-                    [Avatar] [Name] [SettingsIcon]
-                    
-                    Interpretation 2:
-                    [Avatar] [Name] ... (settings inside menu?)
-                    
-                    He said "add setting icon there", likely in the footer row.
-                    Let's try to put Settings as a separate button or at the end of the row.
-                */}
                 <Settings className="ml-auto size-4" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
@@ -72,7 +84,9 @@ export function NavFooter({
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-red-600 focus:text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>

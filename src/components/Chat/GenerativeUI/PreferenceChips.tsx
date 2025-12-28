@@ -62,9 +62,9 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   return (
     <div className="mt-4 space-y-4">
       <div className="flex flex-wrap gap-2">
-        {displayOptions.map((option) => (
+        {displayOptions.map((option, index) => (
           <Button
-            key={option.id}
+            key={option.id || `option-${index}`}
             variant={selected.has(option.id) ? "default" : "outline"}
             size="sm"
             className={cn(

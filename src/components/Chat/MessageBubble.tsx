@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/hooks/useChat";
 import { UI_COMPONENTS, isValidUIComponent } from "./GenerativeUI";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface MessageBubbleProps {
   message: Message;
@@ -14,12 +15,56 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onSendMessage,
 }) => {
   const isUser = message.role === "user";
+  const [showFullMessage, setShowFullMessage] = useState(false);
 
   // Get the UI component if present
   const UIComponent =
     message.ui && isValidUIComponent(message.ui.type)
       ? UI_COMPONENTS[message.ui.type]
       : null;
+
+  // Check if this is a display-only component that should hide message bubble
+  const isItineraryCard = message.ui?.type === "itinerary_card";
+
+  // For itinerary cards, render only the card without the bubble wrapper
+  if (isItineraryCard && UIComponent && message.ui) {
+    return (
+      <div className="flex flex-col w-full mb-4">
+        {/* Collapsible full message */}
+        {message.content && (
+          <div className="mb-4 px-1">
+            <button
+              onClick={() => setShowFullMessage(!showFullMessage)}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              {showFullMessage ? (
+                <>
+                  <ChevronUp className="w-3 h-3" />
+                  Hide full message
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-3 h-3" />
+                  Show full message
+                </>
+              )}
+            </button>
+            {showFullMessage && (
+              <div className="mt-2 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+                <ReactMarkdown>{message.content}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+        )}
+        {/* Itinerary cards */}
+        <div className="w-full">
+          <UIComponent
+            {...message.ui.props}
+            onSubmit={onSendMessage || (() => {})}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -46,10 +91,30 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </div>
 
-        {/* Render dynamic UI component if present and not already handled */}
-        {UIComponent && message.ui && !message.uiHandled && onSendMessage && (
-          <UIComponent {...message.ui.props} onSubmit={onSendMessage} />
-        )}
+        {/* Render dynamic UI component if present */}
+        {UIComponent &&
+          message.ui &&
+          (() => {
+            // Display-only components (like itinerary_card) should always render
+            const isDisplayOnly = message.ui.type === "itinerary_card";
+
+            // Interactive components should not render if already handled
+            if (!isDisplayOnly && message.uiHandled) {
+              return null;
+            }
+
+            // For interactive components, require onSendMessage
+            if (!isDisplayOnly && !onSendMessage) {
+              return null;
+            }
+
+            return (
+              <UIComponent
+                {...message.ui.props}
+                onSubmit={onSendMessage || (() => {})}
+              />
+            );
+          })()}
 
         <div
           className={cn(

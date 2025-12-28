@@ -1,91 +1,284 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { ItineraryCardProps } from "@/types/ui";
+import type {
+  ItineraryCardProps,
+  ItineraryActivity,
+  ItineraryDay,
+} from "@/types/ui";
+import {
+  MapPin,
+  Utensils,
+  Car,
+  Bed,
+  Ticket,
+  ShoppingBag,
+  Mountain,
+  Circle,
+  Footprints,
+  TrainFront,
+  Bus,
+  Train,
+  Plane,
+  Clock,
+  Info,
+  Calendar,
+  Navigation,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const activityTypeIcons: Record<string, string> = {
-  attraction: "🏛️",
-  food: "🍽️",
-  transport: "🚗",
-  hotel: "🏨",
-  activity: "🎯",
-  shopping: "🛍️",
-  nature: "🌲",
-  default: "📍",
+// Icon mappings
+const getActivityIcon = (type: string) => {
+  const normalizedType = type.toLowerCase();
+  switch (normalizedType) {
+    case "attraction":
+      return LandmarkIcon;
+    case "food":
+      return Utensils;
+    case "transport":
+      return Car;
+    case "hotel":
+      return Bed;
+    case "activity":
+      return Ticket;
+    case "shopping":
+      return ShoppingBag;
+    case "nature":
+      return Mountain;
+    default:
+      return MapPin;
+  }
 };
 
-export const ItineraryCard: React.FC<ItineraryCardProps> = ({
-  day_number,
-  date,
-  theme,
-  activities,
+// Helper for Landmark since it might conflict if not handled clearly
+const LandmarkIcon = ({ className }: { className?: string }) => (
+  // Using MapPin as a generic fallback for specific landmark icon if preferred,
+  // or the actual Landmark icon from lucide if available.
+  // MapPin is very safe. Let's use MapPin for general locations and refined ones where possible.
+  <MapPin className={className} />
+);
+
+const getTravelIcon = (method?: string) => {
+  const normalizedMethod = method?.toLowerCase();
+  switch (normalizedMethod) {
+    case "walk":
+      return Footprints;
+    case "metro":
+      return TrainFront;
+    case "taxi":
+    case "drive":
+    case "uber":
+      return Car;
+    case "bus":
+      return Bus;
+    case "train":
+      return Train;
+    case "flight":
+      return Plane;
+    default:
+      return Navigation; // Generic arrow/nav icon
+  }
+};
+
+const ActivityItem = ({
+  activity,
+  isLast,
+  nextActivity,
+}: {
+  activity: ItineraryActivity;
+  isLast: boolean;
+  nextActivity?: ItineraryActivity;
 }) => {
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-  });
+  const Icon = getActivityIcon(activity.type);
+
+  // Determine if we need a travel segment after this activity
+  const showTravel = !isLast && activity.travel_duration;
+  const TravelIcon = getTravelIcon(activity.travel_method);
 
   return (
-    <Card className="mt-4 overflow-hidden">
-      <CardHeader className="bg-linear-to-r from-primary/10 to-primary/5 pb-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg">Day {day_number}</CardTitle>
-            <CardDescription>{formattedDate}</CardDescription>
+    <div className="flex gap-4 group">
+      {/* Left Column: Time */}
+      <div className="w-16 flex flex-col items-end pt-1 shrink-0">
+        <span className="text-sm font-bold text-foreground">
+          {activity.start_time}
+        </span>
+        {activity.end_time && (
+          <span className="text-xs text-muted-foreground/60">
+            {activity.end_time}
+          </span>
+        )}
+      </div>
+
+      {/* Center Column: Timeline Graphics */}
+      <div className="flex flex-col items-center shrink-0 relative">
+        {/* Main Node */}
+        <div className="w-3 h-3 rounded-full border-2 border-foreground bg-background z-10 my-2" />
+
+        {/* Vertical Line */}
+        {!isLast && (
+          <div
+            className={cn(
+              "w-0.5 grow absolute top-5 -bottom-2 bg-border",
+              showTravel
+                ? "border-l-2 border-dashed border-border bg-transparent w-0"
+                : "bg-border"
+            )}
+          />
+        )}
+      </div>
+
+      {/* Right Column: Content */}
+      <div className="flex-1 pb-8 pt-0.5">
+        <div className="flex flex-col gap-1">
+          {/* Title and Duration Pill */}
+          <div className="flex items-start justify-between gap-2">
+            <h4 className="font-semibold text-base text-foreground leading-tight">
+              {activity.title}
+            </h4>
           </div>
-          <Badge variant="secondary" className="font-medium">
-            {theme}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-4">
-        <div className="space-y-4">
-          {activities.map((activity, index) => (
-            <div key={index} className="flex gap-4 relative">
-              {/* Timeline line */}
-              {index < activities.length - 1 && (
-                <div className="absolute left-[17px] top-10 w-0.5 h-full bg-border" />
-              )}
 
-              {/* Icon */}
-              <div className="shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-lg z-10">
-                {activityTypeIcons[activity.type] || activityTypeIcons.default}
-              </div>
+          {/* Subtitle / Location */}
+          <div className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <span className="truncate">{activity.location}</span>
+            {activity.duration && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                <span className="flex items-center gap-1 bg-secondary/50 px-1.5 py-0.5 rounded text-[10px] font-medium text-secondary-foreground">
+                  <Clock className="w-3 h-3" />
+                  {activity.duration}
+                </span>
+              </>
+            )}
+          </div>
 
-              {/* Content */}
-              <div className="flex-1 pb-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h4 className="font-medium text-sm">{activity.title}</h4>
-                    <p className="text-xs text-muted-foreground">
-                      {activity.location}
-                    </p>
-                  </div>
-                  <div className="text-right text-xs text-muted-foreground whitespace-nowrap">
-                    <div className="font-medium text-foreground">
-                      {activity.time}
-                    </div>
-                    <div>{activity.duration}</div>
-                  </div>
+          {/* Description */}
+          {activity.description && (
+            <p className="text-sm text-muted-foreground/80 mt-1 leading-relaxed">
+              {activity.description}
+            </p>
+          )}
+
+          {/* Notes */}
+          {activity.notes && activity.notes.length > 0 && (
+            <div className="mt-2 flex flex-col gap-1">
+              {activity.notes.map((note, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-1.5 text-xs text-amber-600/90 dark:text-amber-500/90 bg-amber-50 dark:bg-amber-950/20 px-2 py-1 rounded w-fit">
+                  <Info className="w-3 h-3 mt-0.5" />
+                  <span>{note}</span>
                 </div>
-                {activity.notes && (
-                  <p className="text-xs text-muted-foreground mt-1 italic">
-                    💡 {activity.notes}
-                  </p>
-                )}
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
+
+        {/* Travel Segment Visualization */}
+        {showTravel && (
+          <div className="mt-2 mb-2 flex items-center gap-3 text-xs text-muted-foreground pl-0">
+            <div className="flex items-center gap-1.5 bg-muted/40 px-2 py-1 rounded-md border border-border/50">
+              <TravelIcon className="w-3.5 h-3.5" />
+              <span className="font-medium">{activity.travel_duration}</span>
+              {activity.travel_method && (
+                <span className="opacity-70">via {activity.travel_method}</span>
+              )}
+            </div>
+            {activity.travel_note && (
+              <span className="opacity-60 italic text-[11px]">
+                • {activity.travel_note}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const DayCard = ({ day }: { day: ItineraryDay }) => {
+  const dateObj = new Date(day.date);
+  const dateStr = dateObj.toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+  const yearStr = dateObj.toLocaleDateString("en-US", { year: "numeric" });
+
+  const hasActivities = day.activities && day.activities.length > 0;
+
+  return (
+    <Card className="rounded-2xl border bg-card text-card-foreground shadow-sm overflow-hidden mb-6 last:mb-0">
+      <div className="px-6 py-5 border-b bg-muted/10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 text-primary w-10 h-10 rounded-xl flex flex-col items-center justify-center font-bold text-sm shrink-0 border border-primary/20">
+            <span>{day.day_number}</span>
+          </div>
+          <div>
+            <div className="text-sm text-muted-foreground font-medium uppercase tracking-wider text-[10px]">
+              {yearStr}
+            </div>
+            <h3 className="font-bold text-lg leading-none">{dateStr}</h3>
+          </div>
+        </div>
+        {day.theme && (
+          <Badge
+            variant="secondary"
+            className="font-normal text-xs bg-muted/50 text-muted-foreground hover:bg-muted/60">
+            {day.theme}
+          </Badge>
+        )}
+      </div>
+
+      <CardContent className="p-6 pt-8">
+        {hasActivities ? (
+          <div className="flex flex-col">
+            {day.activities.map((activity, index) => (
+              <ActivityItem
+                key={index}
+                activity={activity}
+                isLast={index === day.activities.length - 1}
+                nextActivity={day.activities[index + 1]}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-10 text-muted-foreground opacity-60">
+            <Calendar className="w-10 h-10 mb-2 stroke-1" />
+            <p className="text-sm font-medium">No planned activities</p>
+            <p className="text-xs">Enjoy your free time!</p>
+          </div>
+        )}
       </CardContent>
     </Card>
+  );
+};
+
+export const ItineraryCard: React.FC<ItineraryCardProps> = (props) => {
+  // Normalize to array of days
+  let days: ItineraryDay[] = [];
+
+  if (props.days && props.days.length > 0) {
+    days = props.days;
+  } else if (props.day_number && props.date && props.activities) {
+    days = [
+      {
+        day_number: props.day_number,
+        date: props.date,
+        theme: props.theme,
+        activities: props.activities,
+      },
+    ];
+  }
+
+  if (days.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-2 w-full max-w-2xl mx-auto">
+      {days.map((day, index) => (
+        <DayCard key={index} day={day} />
+      ))}
+    </div>
   );
 };
