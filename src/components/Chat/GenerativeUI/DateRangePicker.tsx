@@ -20,6 +20,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   default_duration = 3,
   show_presets = true,
   onSubmit,
+  disabled = false,
 }) => {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: addDays(new Date(), 7),
@@ -34,12 +35,14 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   ];
 
   const handlePresetClick = (startOffset: number, endOffset: number) => {
+    if (disabled) return;
     const from = addDays(new Date(), startOffset);
     const to = addDays(new Date(), endOffset);
     setDate({ from, to });
   };
 
   const handleSubmit = () => {
+    if (disabled) return;
     if (date?.from && date?.to) {
       const formattedRange = `${format(date.from, "MMMM d")}-${format(
         date.to,
@@ -55,15 +58,17 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const maxDateParsed = max_date ? new Date(max_date) : undefined;
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className={cn("mt-4 space-y-4", disabled && "opacity-60")}>
       {/* Date Picker */}
       <Popover>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild disabled={disabled}>
           <Button
             variant="outline"
+            disabled={disabled}
             className={cn(
               "w-full justify-start text-left font-normal rounded-lg",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
+              disabled && "cursor-not-allowed"
             )}>
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
@@ -106,6 +111,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
               variant="outline"
               size="sm"
               className="rounded-full"
+              disabled={disabled}
               onClick={() => handlePresetClick(preset.days[0], preset.days[1])}>
               {preset.label}
             </Button>
@@ -117,8 +123,8 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       <Button
         onClick={handleSubmit}
         className="w-full rounded-lg"
-        disabled={!date?.from}>
-        Confirm Dates
+        disabled={disabled || !date?.from}>
+        {disabled ? "Dates Selected" : "Confirm Dates"}
       </Button>
     </div>
   );

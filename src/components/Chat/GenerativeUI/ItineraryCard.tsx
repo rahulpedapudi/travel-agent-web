@@ -9,14 +9,7 @@ import type {
   ItineraryDay,
 } from "@/types/ui";
 import {
-  MapPin,
-  Utensils,
   Car,
-  Bed,
-  Ticket,
-  ShoppingBag,
-  Mountain,
-  Circle,
   Footprints,
   TrainFront,
   Bus,
@@ -28,37 +21,6 @@ import {
   Navigation,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Icon mappings
-const getActivityIcon = (type: string) => {
-  const normalizedType = type.toLowerCase();
-  switch (normalizedType) {
-    case "attraction":
-      return LandmarkIcon;
-    case "food":
-      return Utensils;
-    case "transport":
-      return Car;
-    case "hotel":
-      return Bed;
-    case "activity":
-      return Ticket;
-    case "shopping":
-      return ShoppingBag;
-    case "nature":
-      return Mountain;
-    default:
-      return MapPin;
-  }
-};
-
-// Helper for Landmark since it might conflict if not handled clearly
-const LandmarkIcon = ({ className }: { className?: string }) => (
-  // Using MapPin as a generic fallback for specific landmark icon if preferred,
-  // or the actual Landmark icon from lucide if available.
-  // MapPin is very safe. Let's use MapPin for general locations and refined ones where possible.
-  <MapPin className={className} />
-);
 
 const getTravelIcon = (method?: string) => {
   const normalizedMethod = method?.toLowerCase();
@@ -85,14 +47,11 @@ const getTravelIcon = (method?: string) => {
 const ActivityItem = ({
   activity,
   isLast,
-  nextActivity,
 }: {
   activity: ItineraryActivity;
   isLast: boolean;
   nextActivity?: ItineraryActivity;
 }) => {
-  const Icon = getActivityIcon(activity.type);
-
   // Determine if we need a travel segment after this activity
   const showTravel = !isLast && activity.travel_duration;
   const TravelIcon = getTravelIcon(activity.travel_method);

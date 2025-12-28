@@ -20,6 +20,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   options,
   show_kids_age_input = true,
   onSubmit,
+  disabled = false,
 }) => {
   // Use default options if none provided
   const displayOptions =
@@ -30,6 +31,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   const [showKidsInput, setShowKidsInput] = React.useState(false);
 
   const handleSelect = (id: string) => {
+    if (disabled) return;
     setSelected(id);
     // Show kids age input if family_kids is selected
     if (id === "family_kids" && show_kids_age_input) {
@@ -41,6 +43,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   };
 
   const handleSubmit = () => {
+    if (disabled) return;
     if (!selected) return;
 
     const option = displayOptions.find((o) => o.id === selected);
@@ -55,17 +58,20 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className={cn("mt-4 space-y-4", disabled && "opacity-60")}>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {displayOptions.map((option) => (
           <button
             key={option.id}
             onClick={() => handleSelect(option.id)}
+            disabled={disabled}
             className={cn(
-              "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all hover:border-primary/50",
+              "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all",
+              !disabled && "hover:border-primary/50",
               selected === option.id
                 ? "border-primary bg-primary/5 shadow-md"
-                : "border-border bg-background"
+                : "border-border bg-background",
+              disabled && "cursor-not-allowed"
             )}>
             <span className="text-2xl mb-2">{option.icon}</span>
             <span className="text-sm font-medium text-center">
@@ -83,6 +89,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
             placeholder="e.g., 8, 12"
             value={kidsAges}
             onChange={(e) => setKidsAges(e.target.value)}
+            disabled={disabled}
           />
         </div>
       )}
@@ -90,8 +97,8 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
       <Button
         onClick={handleSubmit}
         className="w-full rounded-lg"
-        disabled={!selected}>
-        Continue
+        disabled={disabled || !selected}>
+        {disabled ? "Selection Confirmed" : "Continue"}
       </Button>
     </div>
   );

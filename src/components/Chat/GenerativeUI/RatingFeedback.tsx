@@ -11,12 +11,14 @@ export const RatingFeedback: React.FC<RatingFeedbackProps> = ({
   show_comment = true,
   prompt = "How's this?",
   onSubmit,
+  disabled = false,
 }) => {
   const [rating, setRating] = React.useState<number>(0);
   const [hoveredRating, setHoveredRating] = React.useState<number>(0);
   const [comment, setComment] = React.useState<string>("");
 
   const handleSubmit = () => {
+    if (disabled) return;
     if (rating === 0) return;
 
     let response = `${rating}`;
@@ -27,7 +29,7 @@ export const RatingFeedback: React.FC<RatingFeedbackProps> = ({
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className={cn("mt-4 space-y-4", disabled && "opacity-60")}>
       {prompt && (
         <p className="text-sm text-muted-foreground font-medium">{prompt}</p>
       )}
@@ -37,10 +39,15 @@ export const RatingFeedback: React.FC<RatingFeedbackProps> = ({
         {Array.from({ length: scale }, (_, i) => i + 1).map((star) => (
           <button
             key={star}
-            onClick={() => setRating(star)}
-            onMouseEnter={() => setHoveredRating(star)}
-            onMouseLeave={() => setHoveredRating(0)}
-            className="p-1 transition-transform hover:scale-110">
+            onClick={() => !disabled && setRating(star)}
+            onMouseEnter={() => !disabled && setHoveredRating(star)}
+            onMouseLeave={() => !disabled && setHoveredRating(0)}
+            disabled={disabled}
+            className={cn(
+              "p-1 transition-transform",
+              !disabled && "hover:scale-110",
+              disabled && "cursor-not-allowed"
+            )}>
             <svg
               className={cn(
                 "w-8 h-8 transition-colors",
@@ -69,6 +76,7 @@ export const RatingFeedback: React.FC<RatingFeedbackProps> = ({
           onChange={(e) => setComment(e.target.value)}
           className="resize-none"
           rows={3}
+          disabled={disabled}
         />
       )}
 
@@ -76,8 +84,8 @@ export const RatingFeedback: React.FC<RatingFeedbackProps> = ({
       <Button
         onClick={handleSubmit}
         className="w-full rounded-lg"
-        disabled={rating === 0}>
-        Submit Feedback
+        disabled={disabled || rating === 0}>
+        {disabled ? "Feedback Submitted" : "Submit Feedback"}
       </Button>
     </div>
   );

@@ -20,6 +20,25 @@ export const checkHealth = async () => {
   }
 };
 
+// Create a new chat session
+export const createSession = async (
+  authToken: string
+): Promise<{ session_id: string; message: string }> => {
+  const response = await fetch(`${API_BASE_URL}/session`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create session: ${response.status}`);
+  }
+
+  return response.json();
+};
+
 // Non-streaming version (fallback)
 export const sendMessage = async (
   message: string,
@@ -70,6 +89,7 @@ export interface StreamTaskCompleteEvent {
 export interface StreamDoneEvent {
   type: "done";
   session_id: string;
+  chat_title?: string; // Backend-generated title after first message
   ui?: UIComponent;
   // Text content can come from various fields
   response?: string;
@@ -94,6 +114,7 @@ export type StreamEvent =
 export const streamChat = async (
   message: string,
   authToken: string | null,
+  sessionId: string | null,
   onToken: (text: string) => void,
   onThinking: (message: string, tool?: string) => void,
   onComplete: (data: StreamDoneEvent) => void,
@@ -112,10 +133,16 @@ export const streamChat = async (
       headers["Authorization"] = `Bearer ${authToken}`;
     }
 
+    // Build request body
+    const body: { message: string; session_id?: string } = { message };
+    if (sessionId) {
+      body.session_id = sessionId;
+    }
+
     const response = await fetch(`${API_BASE_URL}/chat/stream`, {
       method: "POST",
       headers,
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

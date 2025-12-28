@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
 import type { BudgetSliderProps } from "@/types/ui";
 
 export const BudgetSlider: React.FC<BudgetSliderProps> = ({
@@ -12,6 +13,7 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
   currency = "INR",
   presets = ["Budget (₹10k-50k)", "Mid-range (₹50k-1.5L)", "Luxury (₹2L+)"],
   onSubmit,
+  disabled = false,
 }) => {
   const [value, setValue] = React.useState<number[]>([(min + max) / 2]);
 
@@ -32,15 +34,17 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
   };
 
   const handleSubmit = () => {
+    if (disabled) return;
     onSubmit(formatCurrency(value[0]));
   };
 
   const handlePresetClick = (preset: string) => {
+    if (disabled) return;
     onSubmit(preset);
   };
 
   return (
-    <div className="mt-4 space-y-6">
+    <div className={cn("mt-4 space-y-6", disabled && "opacity-60")}>
       {/* Slider */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -56,11 +60,12 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
         </div>
         <Slider
           value={value}
-          onValueChange={setValue}
+          onValueChange={disabled ? undefined : setValue}
           min={min}
           max={max}
           step={step}
-          className="w-full"
+          className={cn("w-full", disabled && "pointer-events-none")}
+          disabled={disabled}
         />
       </div>
 
@@ -75,6 +80,7 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
                 variant="outline"
                 size="sm"
                 className="rounded-full"
+                disabled={disabled}
                 onClick={() => handlePresetClick(preset)}>
                 {preset}
               </Button>
@@ -84,8 +90,11 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
       )}
 
       {/* Submit */}
-      <Button onClick={handleSubmit} className="w-full rounded-lg">
-        Set Budget to {formatCurrency(value[0])}
+      <Button
+        onClick={handleSubmit}
+        className="w-full rounded-lg"
+        disabled={disabled}>
+        {disabled ? "Budget Set" : `Set Budget to ${formatCurrency(value[0])}`}
       </Button>
     </div>
   );

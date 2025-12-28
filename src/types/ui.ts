@@ -14,6 +14,7 @@ export interface BudgetSliderProps {
   currency: string;
   presets?: string[];
   onSubmit: (value: string) => void;
+  disabled?: boolean;
 }
 
 export interface BudgetSliderUI extends UIComponentBase {
@@ -28,6 +29,7 @@ export interface DateRangePickerProps {
   default_duration?: number;
   show_presets?: boolean;
   onSubmit: (value: string) => void;
+  disabled?: boolean;
 }
 
 export interface DateRangePickerUI extends UIComponentBase {
@@ -48,6 +50,7 @@ export interface PreferenceChipsProps {
   min_selections?: number;
   max_selections?: number | null;
   onSubmit: (value: string) => void;
+  disabled?: boolean;
 }
 
 export interface PreferenceChipsUI extends UIComponentBase {
@@ -66,6 +69,7 @@ export interface CompanionSelectorProps {
   options: CompanionOption[];
   show_kids_age_input?: boolean;
   onSubmit: (value: string) => void;
+  disabled?: boolean;
 }
 
 export interface CompanionSelectorUI extends UIComponentBase {
@@ -79,6 +83,7 @@ export interface RatingFeedbackProps {
   show_comment?: boolean;
   prompt?: string;
   onSubmit: (value: string) => void;
+  disabled?: boolean;
 }
 
 export interface RatingFeedbackUI extends UIComponentBase {

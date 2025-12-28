@@ -7,14 +7,14 @@ import type { PreferenceChipsProps, PreferenceOption } from "@/types/ui";
 
 // Default options when backend doesn't provide any
 const DEFAULT_OPTIONS: PreferenceOption[] = [
-  { id: "food", label: "🍜 Food & Dining", selected: false },
-  { id: "museums", label: "🏛️ Museums & Art", selected: false },
-  { id: "nature", label: "🌲 Nature & Outdoors", selected: false },
-  { id: "nightlife", label: "🌙 Nightlife", selected: false },
-  { id: "shopping", label: "🛍️ Shopping", selected: false },
-  { id: "history", label: "🏰 History & Culture", selected: false },
-  { id: "adventure", label: "🎢 Adventure", selected: false },
-  { id: "relaxation", label: "🧘 Relaxation", selected: false },
+  { id: "food", label: "Food & Dining", selected: false },
+  { id: "museums", label: "Museums & Art", selected: false },
+  { id: "nature", label: "Nature & Outdoors", selected: false },
+  { id: "nightlife", label: "Nightlife", selected: false },
+  { id: "shopping", label: "Shopping", selected: false },
+  { id: "history", label: "History & Culture", selected: false },
+  { id: "adventure", label: "Adventure", selected: false },
+  { id: "relaxation", label: "Relaxation", selected: false },
 ];
 
 export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
@@ -23,16 +23,37 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   min_selections = 0,
   max_selections = null,
   onSubmit,
+  disabled = false,
 }) => {
-  // Use default options if none provided
-  const displayOptions =
-    options && options.length > 0 ? options : DEFAULT_OPTIONS;
+  // Debug: log incoming options
+  // console.log("PreferenceChips options:", options);
+
+  // Normalize options to ensure they have id and label
+  const normalizedOptions = React.useMemo(() => {
+    if (!options || options.length === 0) return DEFAULT_OPTIONS;
+
+    return options.map((opt: any, index: number) => {
+      // Handle various backend formats
+      const id = opt.id || opt.value || `option_${index}`;
+      const label =
+        opt.label || opt.text || opt.name || opt.value || String(opt);
+      const selected = opt.selected || false;
+
+      return { id, label, selected };
+    });
+  }, [options]);
+
+  // Use default options if none provided or all labels are empty
+  const displayOptions = normalizedOptions.some((o) => o.label)
+    ? normalizedOptions
+    : DEFAULT_OPTIONS;
 
   const [selected, setSelected] = React.useState<Set<string>>(
     new Set(displayOptions.filter((o) => o.selected).map((o) => o.id))
   );
 
   const toggleSelection = (id: string) => {
+    if (disabled) return;
     const newSelected = new Set(selected);
 
     if (newSelected.has(id)) {
@@ -52,6 +73,7 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   };
 
   const handleSubmit = () => {
+    if (disabled) return;
     const selectedLabels = displayOptions
       .filter((o) => selected.has(o.id))
       .map((o) => o.label.replace(/^[\p{Emoji}\s]+/u, "").trim())
@@ -60,17 +82,19 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className={cn("mt-4 space-y-4", disabled && "opacity-60")}>
       <div className="flex flex-wrap gap-2">
         {displayOptions.map((option, index) => (
           <Button
             key={option.id || `option-${index}`}
             variant={selected.has(option.id) ? "default" : "outline"}
             size="sm"
+            disabled={disabled}
             className={cn(
               "rounded-full transition-all",
               selected.has(option.id) &&
-                "bg-primary text-primary-foreground shadow-md"
+                "bg-primary text-primary-foreground shadow-md",
+              disabled && "cursor-not-allowed"
             )}
             onClick={() => toggleSelection(option.id)}>
             {option.label}
@@ -80,8 +104,10 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
       <Button
         onClick={handleSubmit}
         className="w-full rounded-lg"
-        disabled={selected.size < min_selections}>
-        Continue with {selected.size} selected
+        disabled={disabled || selected.size < min_selections}>
+        {disabled
+          ? "Selection Confirmed"
+          : `Continue with ${selected.size} selected`}
       </Button>
     </div>
   );

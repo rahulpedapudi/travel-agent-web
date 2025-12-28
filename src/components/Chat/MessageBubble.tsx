@@ -26,6 +26,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   // Check if this is a display-only component that should hide message bubble
   const isItineraryCard = message.ui?.type === "itinerary_card";
 
+  // Don't render empty assistant messages (no content, no UI, not streaming)
+  if (!isUser && !message.content && !UIComponent && !message.isStreaming) {
+    return null;
+  }
+
   // For itinerary cards, render only the card without the bubble wrapper
   if (isItineraryCard && UIComponent && message.ui) {
     return (
@@ -86,6 +91,22 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}>
           {isUser ? (
             <p className="whitespace-pre-wrap">{message.content}</p>
+          ) : message.isStreaming && !message.content ? (
+            // Show typing indicator inside bubble when streaming with no content
+            <div className="flex space-x-1 py-1">
+              <span
+                className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              />
+              <span
+                className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              />
+              <span
+                className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              />
+            </div>
           ) : (
             <ReactMarkdown>{message.content}</ReactMarkdown>
           )}
@@ -98,20 +119,19 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             // Display-only components (like itinerary_card) should always render
             const isDisplayOnly = message.ui.type === "itinerary_card";
 
-            // Interactive components should not render if already handled
-            if (!isDisplayOnly && message.uiHandled) {
+            // For interactive components, require onSendMessage (but still render if handled)
+            if (!isDisplayOnly && !onSendMessage && !message.uiHandled) {
               return null;
             }
 
-            // For interactive components, require onSendMessage
-            if (!isDisplayOnly && !onSendMessage) {
-              return null;
-            }
+            // Pass disabled prop for handled interactive components
+            const isDisabled = !isDisplayOnly && message.uiHandled;
 
             return (
               <UIComponent
                 {...message.ui.props}
                 onSubmit={onSendMessage || (() => {})}
+                disabled={isDisabled}
               />
             );
           })()}

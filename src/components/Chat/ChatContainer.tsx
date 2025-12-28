@@ -1,13 +1,12 @@
 import { useEffect, useRef } from "react";
-import { useChat } from "@/hooks/useChat";
+import { useChatContext } from "@/contexts/ChatContext";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
-import { TypingIndicator } from "./TypingIndicator";
 import { TaskList } from "./TaskList";
 
 export const ChatContainer = () => {
   const { messages, isLoading, thinkingMessage, tasks, sendUserMessage } =
-    useChat();
+    useChatContext();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -99,12 +98,6 @@ export const ChatContainer = () => {
                       </span>
                     </div>
                   </div>
-                </div>
-              )}
-              {/* Loading Indicator when no thinking message */}
-              {isLoading && !thinkingMessage && (
-                <div className="flex justify-start">
-                  <TypingIndicator />
                 </div>
               )}
               <div ref={messagesEndRef} />

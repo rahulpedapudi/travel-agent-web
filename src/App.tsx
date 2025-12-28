@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { ChatContainer } from "@/components/Chat/ChatContainer";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthPage } from "@/components/Auth/AuthPage";
@@ -9,15 +9,16 @@ function App() {
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
       <Route
-        path="/"
         element={
           <ProtectedRoute>
             <AppLayout>
-              <ChatContainer />
+              <Outlet />
             </AppLayout>
           </ProtectedRoute>
-        }
-      />
+        }>
+        <Route path="/" element={<ChatContainer />} />
+        <Route path="/c/:chatId" element={<ChatContainer />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

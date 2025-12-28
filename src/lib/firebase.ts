@@ -11,6 +11,22 @@ import {
   onAuthStateChanged,
   type User,
 } from "firebase/auth";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  serverTimestamp,
+  Timestamp,
+  type DocumentData,
+  type QuerySnapshot,
+} from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -27,14 +43,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Analytics (only in browser)
-let analytics = null;
 if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+  getAnalytics(app);
 }
 
 // Initialize Auth
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+// Initialize Firestore
+export const db = getFirestore(app);
 
 // Auth helper functions
 export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
@@ -47,3 +65,19 @@ export const signOut = () => firebaseSignOut(auth);
 // Re-export types and utilities
 export { onAuthStateChanged };
 export type { User };
+
+// Firestore exports
+export {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  serverTimestamp,
+  Timestamp,
+};
+export type { DocumentData, QuerySnapshot };
