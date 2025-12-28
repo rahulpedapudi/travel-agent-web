@@ -1,7 +1,11 @@
 import axios from "axios";
 import type { UIComponent } from "@/types/ui";
 
-const API_BASE_URL = "http://localhost:8000";
+// const PROD_URL = "https://travel-agent-1005251868180.asia-south1.run.app";
+
+const DEV_URL = "http://localhost:8000";
+
+const API_BASE_URL = DEV_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
