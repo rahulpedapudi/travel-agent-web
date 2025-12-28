@@ -87,14 +87,15 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
         {displayOptions.map((option, index) => (
           <Button
             key={option.id || `option-${index}`}
-            variant={selected.has(option.id) ? "default" : "outline"}
+            variant="ghost"
             size="sm"
             disabled={disabled}
             className={cn(
-              "rounded-full transition-all",
-              selected.has(option.id) &&
-                "bg-primary text-primary-foreground shadow-md",
-              disabled && "cursor-not-allowed"
+              "rounded-full transition-all backdrop-blur-sm border",
+              selected.has(option.id)
+                ? "bg-primary/80 border-primary/50 text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:text-white"
+                : "bg-white/5 hover:bg-white/10 border-white/10 text-white hover:text-white",
+              disabled && "cursor-not-allowed opacity-50"
             )}
             onClick={() => toggleSelection(option.id)}>
             {option.label}
@@ -103,7 +104,7 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
       </div>
       <Button
         onClick={handleSubmit}
-        className="w-full rounded-lg"
+        className="w-full rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all shadow-lg hover:shadow-xl"
         disabled={disabled || selected.size < min_selections}>
         {disabled
           ? "Selection Confirmed"

@@ -79,7 +79,7 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
                 key={index}
                 variant="outline"
                 size="sm"
-                className="rounded-full"
+                className="rounded-full bg-white/5 hover:bg-white/10 border-white/10 text-white hover:text-white transition-all backdrop-blur-sm"
                 disabled={disabled}
                 onClick={() => handlePresetClick(preset)}>
                 {preset}
@@ -92,7 +92,7 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
       {/* Submit */}
       <Button
         onClick={handleSubmit}
-        className="w-full rounded-lg"
+        className="w-full rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all shadow-lg hover:shadow-xl"
         disabled={disabled}>
         {disabled ? "Budget Set" : `Set Budget to ${formatCurrency(value[0])}`}
       </Button>

@@ -66,9 +66,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             variant="outline"
             disabled={disabled}
             className={cn(
-              "w-full justify-start text-left font-normal rounded-lg",
-              !date && "text-muted-foreground",
-              disabled && "cursor-not-allowed"
+              "w-full justify-start text-left font-normal rounded-lg bg-white/5 hover:bg-white/10 border-white/10 backdrop-blur-md text-white hover:text-white transition-all",
+              !date && "text-white/60",
+              disabled && "cursor-not-allowed opacity-50"
             )}>
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
@@ -85,7 +85,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent
+          className="w-auto p-0 bg-black/80 backdrop-blur-2xl border-white/10 text-white"
+          align="start">
           <Calendar
             initialFocus
             mode="range"
@@ -93,6 +95,16 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             selected={date}
             onSelect={setDate}
             numberOfMonths={2}
+            className="bg-transparent text-white"
+            classNames={{
+              day_selected:
+                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+              day_today: "bg-white/10 text-white",
+              day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-white/10 rounded-md transition-colors",
+              day_range_middle:
+                "aria-selected:bg-white/10 aria-selected:text-white",
+              head_cell: "text-muted-foreground w-9 font-normal text-[0.8rem]",
+            }}
             disabled={(date) => {
               if (minDateParsed && date < minDateParsed) return true;
               if (maxDateParsed && date > maxDateParsed) return true;
@@ -110,7 +122,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
               key={preset.label}
               variant="outline"
               size="sm"
-              className="rounded-full"
+              className="rounded-full bg-white/5 hover:bg-white/10 border-white/10 text-white hover:text-white transition-all backdrop-blur-sm"
               disabled={disabled}
               onClick={() => handlePresetClick(preset.days[0], preset.days[1])}>
               {preset.label}
@@ -122,7 +134,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
       {/* Submit */}
       <Button
         onClick={handleSubmit}
-        className="w-full rounded-lg"
+        className="w-full rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all shadow-lg hover:shadow-xl"
         disabled={disabled || !date?.from}>
         {disabled ? "Dates Selected" : "Confirm Dates"}
       </Button>

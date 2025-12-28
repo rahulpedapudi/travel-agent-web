@@ -32,32 +32,16 @@ import type { Chat } from "@/hooks/useChatHistory";
 
 const navMainData: SidebarData["navMain"] = [
   {
-    id: "discover",
-    title: "Discover",
+    id: "explore",
+    title: "Explore",
     url: "#",
     icon: IconCompass,
-    items: [
-      {
-        title: "Destinations",
-        url: "#",
-      },
-      {
-        title: "Trip Guides",
-        url: "#",
-      },
-    ],
   },
   {
     id: "trips",
     title: "My Trips",
     url: "#",
     icon: IconPlaneDeparture,
-  },
-  {
-    id: "history",
-    title: "My History",
-    url: "#",
-    icon: IconHistory,
   },
 ];
 
@@ -101,7 +85,7 @@ export function AppSidebar({
     <>
       <Sidebar
         collapsible="icon"
-        className="m-3 h-[calc(100svh-1.5rem)] rounded-[2rem] border border-white/5 shadow-2xl bg-transparent text-white [&_[data-sidebar=sidebar]]:bg-transparent overflow-hidden"
+        className="m-3 h-[calc(100svh-1.5rem)] rounded-[2rem] border border-white/5 shadow-2xl bg-transparent text-white **:data-[sidebar=sidebar]:bg-transparent overflow-hidden"
         style={
           {
             "--sidebar-background": "rgba(2, 6, 23, 0.0)", // Fully transparent background var

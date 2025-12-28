@@ -14,7 +14,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
           key={action.id}
           variant="outline"
           size="sm"
-          className="rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+          className="rounded-full bg-white/5 hover:bg-white/10 border-white/10 text-white hover:text-white transition-all backdrop-blur-sm"
           onClick={() => onSubmit(action.label)}>
           {action.label}
         </Button>

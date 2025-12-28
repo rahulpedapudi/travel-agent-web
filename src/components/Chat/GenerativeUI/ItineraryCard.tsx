@@ -60,7 +60,7 @@ const ActivityItem = ({
     <div className="flex gap-4 group">
       {/* Left Column: Time */}
       <div className="w-16 flex flex-col items-end pt-1 shrink-0">
-        <span className="text-sm font-bold text-foreground">
+        <span className="text-sm font-bold text-white">
           {activity.start_time}
         </span>
         {activity.end_time && (
@@ -93,7 +93,7 @@ const ActivityItem = ({
         <div className="flex flex-col gap-1">
           {/* Title and Duration Pill */}
           <div className="flex items-start justify-between gap-2">
-            <h4 className="font-semibold text-base text-foreground leading-tight">
+            <h4 className="font-semibold text-base text-white leading-tight">
               {activity.title}
             </h4>
           </div>
@@ -103,9 +103,9 @@ const ActivityItem = ({
             <span className="truncate">{activity.location}</span>
             {activity.duration && (
               <>
-                <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                <span className="flex items-center gap-1 bg-secondary/50 px-1.5 py-0.5 rounded text-[10px] font-medium text-secondary-foreground">
-                  <Clock className="w-3 h-3" />
+                <span className="w-1 h-1 rounded-full bg-white/40" />
+                <span className="flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded text-[10px] font-medium text-white border border-white/10 backdrop-blur-sm">
+                  <Clock className="w-3 h-3 text-white/80" />
                   {activity.duration}
                 </span>
               </>
@@ -125,7 +125,7 @@ const ActivityItem = ({
               {activity.notes.map((note, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-1.5 text-xs text-amber-600/90 dark:text-amber-500/90 bg-amber-50 dark:bg-amber-950/20 px-2 py-1 rounded w-fit">
+                  className="flex items-start gap-1.5 text-xs text-amber-200/90 bg-amber-500/10 px-2 py-1 rounded w-fit border border-amber-500/20">
                   <Info className="w-3 h-3 mt-0.5" />
                   <span>{note}</span>
                 </div>
@@ -136,16 +136,20 @@ const ActivityItem = ({
 
         {/* Travel Segment Visualization */}
         {showTravel && (
-          <div className="mt-2 mb-2 flex items-center gap-3 text-xs text-muted-foreground pl-0">
-            <div className="flex items-center gap-1.5 bg-muted/40 px-2 py-1 rounded-md border border-border/50">
-              <TravelIcon className="w-3.5 h-3.5" />
-              <span className="font-medium">{activity.travel_duration}</span>
+          <div className="mt-2 mb-2 flex items-center gap-3 text-xs text-white/80 pl-0">
+            <div className="flex items-center gap-1.5 bg-white/10 px-2 py-1 rounded-md border border-white/10 backdrop-blur-sm">
+              <TravelIcon className="w-3.5 h-3.5 text-white" />
+              <span className="font-medium text-white">
+                {activity.travel_duration}
+              </span>
               {activity.travel_method && (
-                <span className="opacity-70">via {activity.travel_method}</span>
+                <span className="opacity-70 text-white/80">
+                  via {activity.travel_method}
+                </span>
               )}
             </div>
             {activity.travel_note && (
-              <span className="opacity-60 italic text-[11px]">
+              <span className="opacity-60 italic text-[11px] text-white/60">
                 • {activity.travel_note}
               </span>
             )}
@@ -168,10 +172,10 @@ const DayCard = ({ day }: { day: ItineraryDay }) => {
   const hasActivities = day.activities && day.activities.length > 0;
 
   return (
-    <Card className="rounded-2xl border bg-card text-card-foreground shadow-sm overflow-hidden mb-6 last:mb-0">
-      <div className="px-6 py-5 border-b bg-muted/10 flex items-center justify-between">
+    <Card className="rounded-2xl border-white/10 bg-black/40 backdrop-blur-2xl text-white shadow-sm overflow-hidden mb-6 last:mb-0">
+      <div className="px-6 py-5 border-b border-white/10 bg-white/5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary w-10 h-10 rounded-xl flex flex-col items-center justify-center font-bold text-sm shrink-0 border border-primary/20">
+          <div className="bg-primary/20 text-primary-foreground w-10 h-10 rounded-xl flex flex-col items-center justify-center font-bold text-sm shrink-0 border border-primary/30 shadow-[0_0_10px_rgba(var(--primary),0.2)]">
             <span>{day.day_number}</span>
           </div>
           <div>
@@ -184,7 +188,7 @@ const DayCard = ({ day }: { day: ItineraryDay }) => {
         {day.theme && (
           <Badge
             variant="secondary"
-            className="font-normal text-xs bg-muted/50 text-muted-foreground hover:bg-muted/60">
+            className="font-normal text-xs bg-white/10 text-white hover:bg-white/20 border border-white/10 backdrop-blur-md shadow-sm">
             {day.theme}
           </Badge>
         )}
