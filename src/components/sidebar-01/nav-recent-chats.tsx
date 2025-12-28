@@ -74,17 +74,17 @@ export function NavRecentChats({
           </CollapsibleTrigger>
         </SidebarGroupLabel>
         <CollapsibleContent>
-          <SidebarMenu>
+          <SidebarMenu className="gap-3">
             {chats.map((chat) => (
               <SidebarMenuItem key={chat.id} className="group/item">
                 <SidebarMenuButton
                   tooltip={chat.title}
                   onClick={() => onChatSelect(chat.id)}
                   className={cn(
-                    "pr-8 relative",
+                    "pr-8 relative py-6",
                     currentChatId === chat.id && "bg-sidebar-accent"
                   )}>
-                  <MessageSquare className="mr-2 h-4 w-4 opacity-70 shrink-0" />
+                  <MessageSquare className="mr-2 h-6 w-6 opacity-70 shrink-0" />
                   <div className="flex flex-col min-w-0 flex-1">
                     <span className="truncate text-sm">{chat.title}</span>
                     <span className="truncate text-xs text-muted-foreground">

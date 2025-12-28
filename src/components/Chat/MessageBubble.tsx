@@ -81,8 +81,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         className={cn(
           "max-w-[80%] rounded-2xl p-4 shadow-sm",
           isUser
-            ? "bg-primary text-primary-foreground rounded-br-none"
-            : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-bl-none"
+            ? "bg-primary text-primary-foreground rounded-br-none shadow-md"
+            : "bg-black/10 backdrop-blur-2xl border border-white/5 shadow-sm rounded-bl-none"
         )}>
         <div
           className={cn(

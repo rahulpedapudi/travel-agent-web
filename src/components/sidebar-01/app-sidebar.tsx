@@ -4,6 +4,11 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarFooter,
+  SidebarRail,
+  SidebarTrigger,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
   IconCompass,
@@ -15,7 +20,6 @@ import { NavMain } from "@/components/sidebar-01/nav-main";
 import { NavRecentChats } from "@/components/sidebar-01/nav-recent-chats";
 import { NavFooter } from "@/components/sidebar-01/nav-footer";
 import type { SidebarData } from "./types";
-import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -93,40 +97,74 @@ export function AppSidebar({
     setOpen(false);
   };
 
-  const handleChatDelete = (chatId: string) => {
-    onChatDelete?.(chatId);
-  };
-
   return (
     <>
-      <Sidebar {...props}>
+      <Sidebar
+        collapsible="icon"
+        className="m-3 h-[calc(100svh-1.5rem)] rounded-[2rem] border border-white/5 shadow-2xl bg-transparent text-white [&_[data-sidebar=sidebar]]:bg-transparent overflow-hidden"
+        style={
+          {
+            "--sidebar-background": "rgba(2, 6, 23, 0.0)", // Fully transparent background var
+            "--sidebar-foreground": "#ffffff",
+            "--sidebar-primary": "#0f172a",
+            "--sidebar-primary-foreground": "#ffffff",
+            "--sidebar-accent": "rgba(255, 255, 255, 0.05)",
+            "--sidebar-accent-foreground": "#ffffff",
+            "--sidebar-border": "rgba(255,255,255,0.0)", // No internal separator borders
+            "--sidebar-ring": "#0d9488",
+            "--sidebar-width-icon": "4rem",
+          } as React.CSSProperties
+        }
+        {...props}>
+        {/* Enhanced Liquid Glass background layer matching ChatInput */}
+        <div className="absolute inset-0 bg-black/10 backdrop-blur-2xl -z-10" />
         <SidebarHeader className="p-4 gap-4">
-          <div className="flex items-center space-x-2 text-primary px-1">
-            <span className="font-serif text-lg tracking-tight text-foreground">
-              Traverse
-            </span>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="outline"
-              className="w-full justify-between rounded-lg font-normal text-muted-foreground shadow-none border-input bg-background hover:bg-accent hover:text-accent-foreground"
-              onClick={() => setOpen(true)}>
-              <div className="flex items-center gap-2">
-                <Search className="h-4 w-4" />
-                <span>Search chat</span>
+          <div className="flex items-center justify-between px-1">
+            {/* Expanded State: Logo Text */}
+            <div className="flex items-center space-x-2 text-primary group-data-[collapsible=icon]:hidden animate-in fade-in duration-300">
+              <span className="font-serif text-lg tracking-tight text-white drop-shadow-sm">
+                <IconPlaneDeparture />
+              </span>
+            </div>
+
+            {/* Collapsed State: Dynamic Icon */}
+            <div className="hidden group-data-[collapsible=icon]:flex items-center justify-center w-full relative group/icon">
+              <SidebarTrigger className="absolute opacity-0 group-hover/icon:opacity-100 transition-opacity duration-300 z-10 text-white hover:bg-white" />
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg transition-opacity duration-300 group-hover/icon:opacity-0">
+                <IconPlaneDeparture className="w-6 h-6 text-white" />
               </div>
-              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                <span className="text-xs">⌘</span>K
-              </kbd>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start rounded-lg shadow-none border-input bg-background hover:bg-accent hover:text-accent-foreground font-medium"
-              onClick={onNewChat}>
-              <Plus className="w-4 h-4 mr-2" />
-              New Chat
-            </Button>
+            </div>
+
+            {/* Expanded State: Close Button */}
+            <div className="group-data-[collapsible=icon]:hidden">
+              <SidebarTrigger className="text-white/60 hover:text-white hover:bg-white/10" />
+            </div>
           </div>
+
+          <SidebarMenu className="mt-2">
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => setOpen(true)}
+                tooltip="Search chat"
+                className="bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10">
+                <Search className="h-6 w-6" />
+                <span>Search chat</span>
+                <kbd className="pointer-events-none ml-auto inline-flex h-5 select-none items-center gap-1 rounded border border-white/10 bg-white/5 px-1.5 font-mono text-[10px] font-medium text-slate-400 opacity-100 group-data-[collapsible=icon]:hidden">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={onNewChat}
+                tooltip="New Chat"
+                className="bg-teal-600 hover:bg-teal-700 text-white hover:text-white data-[active=true]:bg-teal-700 data-[active=true]:text-white shadow-sm font-medium">
+                <Plus className="h-6 w-6" />
+                <span>New Chat</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarHeader>
 
         <SidebarContent className="px-2">
@@ -136,13 +174,14 @@ export function AppSidebar({
             currentChatId={currentChatId}
             isLoading={isLoadingChats}
             onChatSelect={handleChatSelect}
-            onChatDelete={handleChatDelete}
+            onChatDelete={onChatDelete || (() => {})}
           />
         </SidebarContent>
 
-        <SidebarFooter className="p-4 border-t border-sidebar-border">
+        <SidebarFooter className="p-4 border-t border-white/5">
           <NavFooter />
         </SidebarFooter>
+        <SidebarRail />
       </Sidebar>
 
       <CommandDialog open={open} onOpenChange={setOpen}>

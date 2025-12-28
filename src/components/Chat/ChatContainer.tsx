@@ -3,6 +3,7 @@ import { useChatContext } from "@/contexts/ChatContext";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { TaskList } from "./TaskList";
+import { Globe } from "../Home/Globe";
 
 export const ChatContainer = () => {
   const { messages, isLoading, thinkingMessage, tasks, sendUserMessage } =
@@ -18,98 +19,110 @@ export const ChatContainer = () => {
   }, [messages, isLoading, thinkingMessage, tasks]);
 
   return (
-    <div className="h-full w-full relative overflow-hidden">
-      {/* Messages Area - Scrollable, leaving room for input */}
-      <main className="absolute inset-0 bottom-20 overflow-y-auto">
-        <div className="max-w-5xl mx-auto p-4">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center min-h-full px-4 space-y-12 py-8">
-              {/* Hero Section */}
-              <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <h1 className="font-serif text-5xl md:text-6xl font-medium tracking-tight bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent pb-2">
-                  Welcome to Traverse
-                </h1>
-                <p className="text-xl text-muted-foreground font-light">
-                  Your personalized travel planning assistant.
-                </p>
-              </div>
+    <div className="relative w-full h-full overflow-hidden bg-slate-950">
+      {/* 3D Background */}
+      <div className="absolute inset-0 z-0">
+        <Globe />
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
 
-              {/* Quick Actions Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-                <QuickActionCard
-                  icon=""
-                  title="Where to next?"
-                  description="Show me the cheapest flights to London next week."
-                  onClick={() =>
-                    sendUserMessage("Show me cheapest flights to London")
-                  }
-                />
-                <QuickActionCard
-                  icon=""
-                  title="Planned Trips"
-                  description="Check status of my upcoming trip to Paris."
-                  onClick={() => sendUserMessage("Check my Paris trip status")}
-                />
-                <QuickActionCard
-                  icon=""
-                  title="Ask about travel"
-                  description="What are the visa requirements for Japan?"
-                  onClick={() => sendUserMessage("Visa requirements for Japan")}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="p-4 md:p-8 space-y-6 max-w-3xl mx-auto w-full">
-              {messages.map((msg) => (
-                <MessageBubble
-                  key={msg.id}
-                  message={msg}
-                  onSendMessage={sendUserMessage}
-                />
-              ))}
+      <div className="h-full w-full relative overflow-hidden z-10">
+        {/* Messages Area - Scrollable, leaving room for input */}
+        <main className="absolute inset-0 bottom-20 overflow-y-auto">
+          <div className="max-w-5xl mx-auto p-4">
+            {messages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center min-h-full px-4 space-y-12 py-8">
+                {/* Hero Section */}
+                <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <h1 className="font-serif text-5xl md:text-6xl font-medium tracking-tight bg-linear-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent pb-2">
+                    Welcome to Traverse
+                  </h1>
+                  <p className="text-xl text-muted-foreground font-light">
+                    Your personalized travel planning assistant.
+                  </p>
+                </div>
 
-              {/* Task List - shows agent's plan */}
-              {tasks.length > 0 && <TaskList tasks={tasks} />}
-              {thinkingMessage && (
-                <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2">
-                  <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-bl-none p-4 shadow-sm max-w-[80%]">
-                    <div className="flex items-center gap-3">
-                      <div className="flex space-x-1">
-                        <span
-                          className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
-                          style={{ animationDelay: "0ms" }}
-                        />
-                        <span
-                          className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
-                          style={{ animationDelay: "150ms" }}
-                        />
-                        <span
-                          className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
-                          style={{ animationDelay: "300ms" }}
-                        />
+                {/* Quick Actions Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+                  <QuickActionCard
+                    icon=""
+                    title="Where to next?"
+                    description="Show me the cheapest flights to London next week."
+                    onClick={() =>
+                      sendUserMessage("Show me cheapest flights to London")
+                    }
+                  />
+                  <QuickActionCard
+                    icon=""
+                    title="Planned Trips"
+                    description="Check status of my upcoming trip to Paris."
+                    onClick={() =>
+                      sendUserMessage("Check my Paris trip status")
+                    }
+                  />
+                  <QuickActionCard
+                    icon=""
+                    title="Ask about travel"
+                    description="What are the visa requirements for Japan?"
+                    onClick={() =>
+                      sendUserMessage("Visa requirements for Japan")
+                    }
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 md:p-8 space-y-6 max-w-3xl mx-auto w-full">
+                {messages.map((msg) => (
+                  <MessageBubble
+                    key={msg.id}
+                    message={msg}
+                    onSendMessage={sendUserMessage}
+                  />
+                ))}
+
+                {/* Task List - shows agent's plan */}
+                {tasks.length > 0 && <TaskList tasks={tasks} />}
+                {thinkingMessage && (
+                  <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2">
+                    <div className="bg-black/10 backdrop-blur-2xl border border-white/5 rounded-2xl rounded-bl-none p-4 shadow-sm max-w-[80%]">
+                      <div className="flex items-center gap-3">
+                        <div className="flex space-x-1">
+                          <span
+                            className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
+                            style={{ animationDelay: "0ms" }}
+                          />
+                          <span
+                            className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
+                            style={{ animationDelay: "150ms" }}
+                          />
+                          <span
+                            className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"
+                            style={{ animationDelay: "300ms" }}
+                          />
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {thinkingMessage.message}
+                          {thinkingMessage.tool && (
+                            <span className="ml-1 text-xs opacity-60">
+                              ({thinkingMessage.tool})
+                            </span>
+                          )}
+                        </span>
                       </div>
-                      <span className="text-sm text-muted-foreground">
-                        {thinkingMessage.message}
-                        {thinkingMessage.tool && (
-                          <span className="ml-1 text-xs opacity-60">
-                            ({thinkingMessage.tool})
-                          </span>
-                        )}
-                      </span>
                     </div>
                   </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-      </main>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
+        </main>
 
-      {/* Input Area - Fixed at very bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center bg-background z-1">
-        <div className="w-full max-w-3xl">
-          <ChatInput onSend={sendUserMessage} isLoading={isLoading} />
+        {/* Input Area - Fade gradient background for better readability/transition */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 flex justify-center z-10 pointer-events-none">
+          <div className="w-full max-w-3xl pointer-events-auto">
+            <ChatInput onSend={sendUserMessage} isLoading={isLoading} />
+          </div>
         </div>
       </div>
     </div>
@@ -129,7 +142,7 @@ const QuickActionCard = ({
 }) => (
   <button
     onClick={onClick}
-    className="flex flex-col items-start p-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 hover:shadow-md transition-all text-left group h-full">
+    className="flex flex-col items-start p-6 rounded-2xl bg-black/10 backdrop-blur-2xl border border-white/5 hover:bg-white/5 hover:shadow-lg transition-all text-left group h-full shadow-sm">
     <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-700/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
       <span className="text-xl">{icon}</span>
     </div>
