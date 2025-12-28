@@ -5,7 +5,7 @@ import {
   collection,
   doc,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   query,
   orderBy,
@@ -120,7 +120,7 @@ export const useChatHistory = () => {
 
       try {
         const chatRef = doc(db, "users", userId, "chats", chatId);
-        await updateDoc(chatRef, { sessionId });
+        await setDoc(chatRef, { sessionId }, { merge: true });
       } catch (error) {
         console.error("Error updating session ID:", error);
       }
@@ -135,7 +135,7 @@ export const useChatHistory = () => {
 
       try {
         const chatRef = doc(db, "users", userId, "chats", chatId);
-        await updateDoc(chatRef, { title });
+        await setDoc(chatRef, { title }, { merge: true });
       } catch (error) {
         console.error("Error updating chat title:", error);
       }
@@ -173,10 +173,14 @@ export const useChatHistory = () => {
         const chatRef = doc(db, "users", userId, "chats", chatId);
         const preview =
           content.slice(0, 100) + (content.length > 100 ? "..." : "");
-        await updateDoc(chatRef, {
-          lastMessage: preview,
-          updatedAt: serverTimestamp(),
-        });
+        await setDoc(
+          chatRef,
+          {
+            lastMessage: preview,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
       } catch (error) {
         console.error("Error adding message:", error);
       }

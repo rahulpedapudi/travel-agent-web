@@ -16,6 +16,7 @@ import {
   collection,
   doc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -31,12 +32,12 @@ import {
 // Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "travel-agent-22d39.firebaseapp.com",
-  projectId: "travel-agent-22d39",
-  storageBucket: "travel-agent-22d39.firebasestorage.app",
-  messagingSenderId: "997259356514",
-  appId: "1:997259356514:web:459afd135f61c8c9aca43b",
-  measurementId: "G-S0ZZRTJ4H7",
+  authDomain: "techsprint-482415.firebaseapp.com",
+  projectId: "techsprint-482415",
+  storageBucket: "techsprint-482415.firebasestorage.app",
+  messagingSenderId: "1005251868180",
+  appId: "1:1005251868180:web:21c5726f7fa7fc81fa1901",
+  measurementId: "G-ZRMH8LPFCW",
 };
 
 // Initialize Firebase
@@ -71,6 +72,7 @@ export {
   collection,
   doc,
   addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
