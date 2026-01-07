@@ -93,7 +93,7 @@ export const PreferenceChips: React.FC<PreferenceChipsProps> = ({
             className={cn(
               "rounded-full transition-all backdrop-blur-sm border",
               selected.has(option.id)
-                ? "bg-primary/80 border-primary/50 text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:text-white"
+                ? "bg-teal-500/20 border-teal-500/50 text-teal-300 shadow-lg shadow-teal-500/10 hover:bg-teal-500/30 hover:text-teal-200"
                 : "bg-white/5 hover:bg-white/10 border-white/10 text-white hover:text-white",
               disabled && "cursor-not-allowed opacity-50"
             )}
