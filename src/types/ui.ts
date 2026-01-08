@@ -168,7 +168,55 @@ export type UIComponent =
   | CompanionSelectorUI
   | RatingFeedbackUI
   | ItineraryCardUI
-  | QuickActionsUI;
+  | QuickActionsUI
+  | MapViewUI
+  | RouteViewUI;
 
 // Helper type for component props with onSubmit
 export type UIComponentType = UIComponent["type"];
+
+// Map View
+export interface MapMarker {
+  lat: number;
+  lng: number;
+  title: string;
+  type?: string;
+  day?: number;
+  description?: string;
+}
+
+export interface MapViewProps {
+  center: { lat: number; lng: number };
+  zoom?: number;
+  markers?: MapMarker[];
+  title?: string;
+  [key: string]: unknown;
+}
+
+export interface MapViewUI extends UIComponentBase {
+  type: "map_view";
+  props: MapViewProps;
+}
+
+// Route View
+export interface RouteWaypoint {
+  lat: number;
+  lng: number;
+  title: string;
+  order?: number;
+  arrival_time?: string;
+}
+
+export interface RouteViewProps {
+  origin: { lat: number; lng: number };
+  destination: { lat: number; lng: number };
+  waypoints?: RouteWaypoint[];
+  travel_mode?: "DRIVING" | "WALKING" | "TRANSIT" | "BICYCLING";
+  day_number?: number;
+  [key: string]: unknown;
+}
+
+export interface RouteViewUI extends UIComponentBase {
+  type: "route_view";
+  props: RouteViewProps;
+}
