@@ -21,6 +21,7 @@ import {
   Navigation,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AddToCalendarButton } from "./AddToCalendarButton";
 
 const getTravelIcon = (method?: string) => {
   const normalizedMethod = method?.toLowerCase();
@@ -275,6 +276,9 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (props) => {
       {days.map((day, index) => (
         <DayCard key={index} day={day} />
       ))}
+      
+      {/* Add to Calendar Button */}
+      <AddToCalendarButton days={days} />
     </div>
   );
 };
