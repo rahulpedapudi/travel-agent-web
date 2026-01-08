@@ -66,15 +66,18 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
             onClick={() => handleSelect(option.id)}
             disabled={disabled}
             className={cn(
-              "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all",
-              !disabled && "hover:border-primary/50",
+              "flex flex-col items-center justify-center p-4 rounded-xl border transition-all backdrop-blur-sm",
+              !disabled && "hover:bg-white/10 hover:border-white/20 hover:shadow-lg",
               selected === option.id
-                ? "border-primary bg-primary/5 shadow-md"
-                : "border-border bg-background",
-              disabled && "cursor-not-allowed"
+                ? "bg-teal-500/20 border-teal-500/50 shadow-lg shadow-teal-500/10"
+                : "bg-white/5 border-white/10",
+              disabled && "cursor-not-allowed opacity-50"
             )}>
             <span className="text-2xl mb-2">{option.icon}</span>
-            <span className="text-sm font-medium text-center">
+            <span className={cn(
+              "text-sm font-medium text-center",
+              selected === option.id ? "text-teal-300" : "text-white"
+            )}>
               {option.label}
             </span>
           </button>
@@ -96,7 +99,7 @@ export const CompanionSelector: React.FC<CompanionSelectorProps> = ({
 
       <Button
         onClick={handleSubmit}
-        className="w-full rounded-lg"
+        className="w-full rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/10 backdrop-blur-md transition-all shadow-lg hover:shadow-xl"
         disabled={disabled || !selected}>
         {disabled ? "Selection Confirmed" : "Continue"}
       </Button>
