@@ -260,23 +260,100 @@ export const useChat = () => {
           setTimeout(resolve, response.responseDelay)
         );
 
+        // Check if this is the final itinerary response (has ui_components)
+        const isItineraryResponse =
+          response.ui_components && response.ui_components.length > 0;
+        const charDelay = isItineraryResponse ? 25 : 15; // Slower for itinerary
+        const chunkSize = isItineraryResponse ? 2 : 3; // Smaller chunks for itinerary
+
         // Simulate streaming the response text character by character
         const responseText = response.text;
-        for (let i = 0; i < responseText.length; i += 3) {
-          const chunk = responseText.slice(0, i + 3);
+        for (let i = 0; i < responseText.length; i += chunkSize) {
+          const chunk = responseText.slice(0, i + chunkSize);
           updateStreamingMessage(assistantMessageId, chunk);
-          await new Promise((resolve) => setTimeout(resolve, 15));
+          await new Promise((resolve) => setTimeout(resolve, charDelay));
         }
 
-        // Finalize with full response and UI components
+        // Finalize text first
         updateStreamingMessage(assistantMessageId, responseText);
-        finalizeStreamingMessage(
-          assistantMessageId,
-          response.ui ? normalizeUIComponent(response.ui) : undefined,
-          response.ui_components
-            ?.map((c) => normalizeUIComponent(c))
-            .filter(Boolean) as UIComponent[] | undefined
-        );
+
+        // For itinerary responses, show components in stages
+        if (isItineraryResponse && response.ui_components) {
+          const allComponents = response.ui_components
+            .map((c) => normalizeUIComponent(c))
+            .filter(Boolean) as UIComponent[];
+
+          // Find component indices
+          const flightIdx = allComponents.findIndex(
+            (c) => c.type === "flight_card"
+          );
+          const itineraryIdx = allComponents.findIndex(
+            (c) => c.type === "itinerary_card"
+          );
+          const mapIdx = allComponents.findIndex((c) => c.type === "map_view");
+
+          // Stage 1: Show flight card first
+          if (flightIdx !== -1) {
+            setThinkingMessage({ message: "Finding best flights for you..." });
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            setThinkingMessage(null);
+
+            finalizeStreamingMessage(
+              assistantMessageId,
+              response.ui ? normalizeUIComponent(response.ui) : undefined,
+              [allComponents[flightIdx]]
+            );
+
+            // Wait before showing more
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          }
+
+          // Stage 2: Add itinerary card
+          if (itineraryIdx !== -1) {
+            setThinkingMessage({
+              message: "Building your day-by-day itinerary...",
+            });
+            await new Promise((resolve) => setTimeout(resolve, 1800));
+            setThinkingMessage(null);
+
+            const componentsToShow =
+              flightIdx !== -1
+                ? [allComponents[flightIdx], allComponents[itineraryIdx]]
+                : [allComponents[itineraryIdx]];
+
+            finalizeStreamingMessage(
+              assistantMessageId,
+              response.ui ? normalizeUIComponent(response.ui) : undefined,
+              componentsToShow
+            );
+
+            // Wait before showing map
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+          }
+
+          // Stage 3: Add map view
+          if (mapIdx !== -1) {
+            setThinkingMessage({ message: "Mapping your destinations..." });
+            await new Promise((resolve) => setTimeout(resolve, 1200));
+            setThinkingMessage(null);
+
+            // Show all components
+            finalizeStreamingMessage(
+              assistantMessageId,
+              response.ui ? normalizeUIComponent(response.ui) : undefined,
+              allComponents
+            );
+          }
+        } else {
+          // Non-itinerary responses - show everything at once
+          finalizeStreamingMessage(
+            assistantMessageId,
+            response.ui ? normalizeUIComponent(response.ui) : undefined,
+            response.ui_components
+              ?.map((c) => normalizeUIComponent(c))
+              .filter(Boolean) as UIComponent[] | undefined
+          );
+        }
 
         // Save to Firestore
         if (chatId) {

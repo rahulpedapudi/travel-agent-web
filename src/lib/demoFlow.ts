@@ -451,10 +451,11 @@ Here's your personalized itinerary with flights, day-by-day activities, and a ma
 ${dest.response}`,
       ui_components: components,
       thinkingSteps: [
-        { message: "Building your personalized itinerary...", delay: 900 },
-        { message: "Searching flights...", delay: 800 },
-        { message: "Curating experiences...", delay: 700 },
-        { message: "Creating your map...", delay: 500 },
+        { message: "Building your personalized itinerary...", delay: 1200 },
+        { message: "Searching best flight options...", delay: 1000 },
+        { message: "Curating local experiences...", delay: 900 },
+        { message: "Mapping all your destinations...", delay: 800 },
+        { message: "Finalizing your trip plan...", delay: 600 },
       ],
       responseDelay: simulateTypingDelay(`Amazing! I've crafted the perfect`),
     };
