@@ -21,6 +21,7 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
   ui?: any; // UI component data
+  ui_components?: any[]; // Array of UI components (for demo mode)
 }
 
 export interface Chat {
@@ -149,7 +150,8 @@ export const useChatHistory = () => {
       chatId: string,
       role: "user" | "assistant",
       content: string,
-      ui?: any
+      ui?: any,
+      ui_components?: any[]
     ) => {
       if (!userId || !chatId) return;
 
@@ -166,6 +168,7 @@ export const useChatHistory = () => {
           role,
           content,
           ui: ui || null,
+          ui_components: ui_components || null,
           timestamp: serverTimestamp(),
         });
 
@@ -248,6 +251,7 @@ export const useChatHistory = () => {
             content: data.content,
             timestamp: data.timestamp?.toDate() || new Date(),
             ui: data.ui,
+            ui_components: data.ui_components,
           };
         });
 

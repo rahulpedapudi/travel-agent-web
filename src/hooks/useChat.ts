@@ -357,11 +357,16 @@ export const useChat = () => {
 
         // Save to Firestore
         if (chatId) {
+          const normalizedComponents = response.ui_components
+            ?.map((c) => normalizeUIComponent(c))
+            .filter(Boolean) as any[] | undefined;
+
           await chatHistory.addMessage(
             chatId,
             "assistant",
             responseText,
-            response.ui ? normalizeUIComponent(response.ui) : undefined
+            response.ui ? normalizeUIComponent(response.ui) : undefined,
+            normalizedComponents
           );
         }
 
