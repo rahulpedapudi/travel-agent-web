@@ -7,6 +7,7 @@ import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
 import { PopularDestinations } from "@/components/Popular/PopularDestinations";
 import { DestinationDetails } from "@/components/Popular/DestinationDetails";
 import { MyTripsPage } from "@/components/Trips/MyTripsPage";
+import { Onboarding } from "@/components/Onboarding/Onboarding";
 import { MapProvider } from "@/components/MapProvider";
 
 function App() {
@@ -28,6 +29,14 @@ function App() {
           <Route path="/trips" element={<MyTripsPage />} />
           <Route path="/c/:chatId" element={<ChatContainer />} />
         </Route>
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <Onboarding />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </MapProvider>

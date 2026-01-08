@@ -18,12 +18,13 @@ export const HomePage = () => {
       </div> */}
 
       {/* Floating Chat Input with Glass Variant */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 p-6 flex justify-center pb-12">
+      <div className="absolute bottom-0 left-0 right-0 z-20 p-6 flex flex-col items-center gap-6 pb-12">
+
         <div className="w-full max-w-3xl">
           <ChatInput
             onSend={sendUserMessage}
             isLoading={isLoading}
-            // variant="glass"
+          // variant="glass"
           />
         </div>
       </div>

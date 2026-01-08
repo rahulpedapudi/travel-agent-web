@@ -2518,7 +2518,7 @@ Here's your personalized trip plan:`,
 // Mexico City Demo Data
 export const MEXICO_CITY_DEMO: DemoDestination = {
   keywords: [
-    "Mexico", 
+    "Mexico",
     "mexico city",
     "mexico",
     "cdmx",
@@ -2773,6 +2773,10 @@ export const generateDemoUIComponents = (
     type: "itinerary_card",
     props: {
       days: itineraryWithDates,
+      title: `${dest.name} Adventure`,
+      destination: dest.name,
+      imageUrl: dest.imageUrl || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop",
+      budget: "Calculated",
     },
     required: false,
   });

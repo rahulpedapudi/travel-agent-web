@@ -252,6 +252,11 @@ const DayCard = ({ day }: { day: ItineraryDay }) => {
   );
 };
 
+import { useTrips } from "@/hooks/useTrips";
+import { Button } from "@/components/ui/button";
+import { Save, CheckCircle2, Loader2 } from "lucide-react";
+import { useState } from "react";
+
 export const ItineraryCard: React.FC<ItineraryCardProps> = (props) => {
   // Normalize to array of days
   let days: ItineraryDay[] = [];
@@ -269,14 +274,64 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (props) => {
     ];
   }
 
+  const { saveTrip } = useTrips();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   if (days.length === 0) return null;
 
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      // Construct trip data from props and first day
+      const firstDay = days[0];
+      const lastDay = days[days.length - 1];
+
+      // Extract title/destination from context or use defaults
+      // Since props don't pass full trip metadata, we infer or use generics
+      // Ideally this card is part of a larger context.
+      // For now, we'll try to guess or use a prompt.
+
+      await saveTrip({
+        title: props.title || `Trip to ${props.destination || "Unknown"}`,
+        destination: props.destination || "Custom Destination",
+        startDate: firstDay.date,
+        endDate: lastDay.date,
+        imageUrl: props.imageUrl || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop",
+        totalBudget: props.budget || "Calculated",
+      }, days);
+
+      setIsSaved(true);
+    } catch (err) {
+      console.error("Failed to save", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-2 w-full max-w-2xl mx-auto">
-      {days.map((day, index) => (
-        <DayCard key={index} day={day} />
-      ))}
-      
+    <div className="flex flex-col gap-4 w-full max-w-2xl mx-auto">
+      {/* Action Header */}
+      <div className="flex justify-between items-center px-2">
+        <h3 className="text-zinc-400 text-sm font-medium uppercase tracking-wider">Suggested Itinerary</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSave}
+          disabled={isSaved || isSaving}
+          className={`text-xs gap-2 ${isSaved ? "text-teal-400 hover:text-teal-300" : "text-zinc-400 hover:text-white"}`}
+        >
+          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+          {isSaving ? "Saving..." : isSaved ? "Saved to Trips" : "Save Trip"}
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        {days.map((day, index) => (
+          <DayCard key={index} day={day} />
+        ))}
+      </div>
+
       {/* Add to Calendar Button */}
       <AddToCalendarButton days={days} />
     </div>

@@ -132,6 +132,11 @@ export interface ItineraryCardProps {
   date?: string;
   theme?: string;
   activities?: ItineraryActivity[];
+  // Trip Metadata for saving
+  title?: string;
+  destination?: string;
+  imageUrl?: string;
+  budget?: string;
   // Multi-day format
   days?: ItineraryDay[];
   // Common
