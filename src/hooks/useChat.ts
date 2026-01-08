@@ -5,6 +5,12 @@ import { v4 as uuidv4 } from "uuid";
 import type { UIComponent } from "@/types/ui";
 import { auth } from "@/lib/firebase";
 import { useChatHistory } from "./useChatHistory";
+import {
+  processDemoMessage,
+  isInDemoConversation,
+  getDemoState,
+} from "@/lib/demoFlow";
+import { detectDemoDestination } from "@/lib/mockData";
 
 // Re-export PlanTask for consumers
 export type { PlanTask };
@@ -21,6 +27,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   ui?: UIComponent;
+  ui_components?: UIComponent[];
   isStreaming?: boolean;
   uiHandled?: boolean;
 }
@@ -174,10 +181,12 @@ export const useChat = () => {
 
   // Finalize a streaming message
   const finalizeStreamingMessage = useCallback(
-    (messageId: string, ui?: UIComponent) => {
+    (messageId: string, ui?: UIComponent, uiComponents?: UIComponent[]) => {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === messageId ? { ...msg, isStreaming: false, ui } : msg
+          msg.id === messageId
+            ? { ...msg, isStreaming: false, ui, ui_components: uiComponents }
+            : msg
         )
       );
     },
@@ -226,8 +235,76 @@ export const useChat = () => {
     const assistantMessageId = addMessage("assistant", "", undefined, true);
     streamingMessageIdRef.current = assistantMessageId;
 
-    let accumulatedContent = "";
     const isFirstMessage = isFirstMessageRef.current;
+    const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+
+    // Check for demo mode - either explicitly enabled or destination detected
+    const demoResponse = processDemoMessage(content);
+    const shouldUseDemoMode =
+      isDemoMode || demoResponse || isInDemoConversation();
+
+    if (shouldUseDemoMode && (demoResponse || detectDemoDestination(content))) {
+      const response = demoResponse || processDemoMessage(content);
+      if (response) {
+        // Show thinking steps with delays
+        if (response.thinkingSteps) {
+          for (const step of response.thinkingSteps) {
+            setThinkingMessage({ message: step.message });
+            await new Promise((resolve) => setTimeout(resolve, step.delay));
+          }
+        }
+        setThinkingMessage(null);
+
+        // Simulate realistic typing delay
+        await new Promise((resolve) =>
+          setTimeout(resolve, response.responseDelay)
+        );
+
+        // Simulate streaming the response text character by character
+        const responseText = response.text;
+        for (let i = 0; i < responseText.length; i += 3) {
+          const chunk = responseText.slice(0, i + 3);
+          updateStreamingMessage(assistantMessageId, chunk);
+          await new Promise((resolve) => setTimeout(resolve, 15));
+        }
+
+        // Finalize with full response and UI components
+        updateStreamingMessage(assistantMessageId, responseText);
+        finalizeStreamingMessage(
+          assistantMessageId,
+          response.ui ? normalizeUIComponent(response.ui) : undefined,
+          response.ui_components
+            ?.map((c) => normalizeUIComponent(c))
+            .filter(Boolean) as UIComponent[] | undefined
+        );
+
+        // Save to Firestore
+        if (chatId) {
+          await chatHistory.addMessage(
+            chatId,
+            "assistant",
+            responseText,
+            response.ui ? normalizeUIComponent(response.ui) : undefined
+          );
+        }
+
+        // Generate demo title on first message
+        if (isFirstMessage && chatId) {
+          const demoState = getDemoState();
+          if (demoState.destination) {
+            await chatHistory.updateChatTitle(
+              chatId,
+              `${demoState.destination.name} Trip Plan`
+            );
+            isFirstMessageRef.current = false;
+          }
+        }
+
+        setIsLoading(false);
+        streamingMessageIdRef.current = null;
+        return; // Exit early, skip real API call
+      }
+    }
 
     try {
       // Get Firebase ID token for authentication
@@ -236,6 +313,8 @@ export const useChat = () => {
 
       // Get session ID for continuing conversations
       const sessionId = chatHistory.getCurrentSessionId();
+
+      let accumulatedContent = "";
 
       await streamChat(
         content,
@@ -256,11 +335,19 @@ export const useChat = () => {
           setThinkingMessage(null);
 
           let uiComponent: UIComponent | undefined;
+          let uiComponents: UIComponent[] | undefined;
           let finalText = accumulatedContent;
 
           // Handle UI component from done event
           if (data.ui) {
             uiComponent = normalizeUIComponent(data.ui);
+          }
+
+          // Handle ui_components array from done event (demo mode)
+          if (data.ui_components && Array.isArray(data.ui_components)) {
+            uiComponents = data.ui_components
+              .map((c: any) => normalizeUIComponent(c))
+              .filter((c): c is UIComponent => c !== undefined);
           }
 
           // Check if accumulated content is JSON
@@ -292,7 +379,11 @@ export const useChat = () => {
             updateStreamingMessage(assistantMessageId, finalText);
           }
 
-          finalizeStreamingMessage(assistantMessageId, uiComponent);
+          finalizeStreamingMessage(
+            assistantMessageId,
+            uiComponent,
+            uiComponents
+          );
           setIsLoading(false);
           setTasks([]);
           streamingMessageIdRef.current = null;

@@ -4,11 +4,43 @@ import { cn } from "@/lib/utils";
 import type { Message } from "@/hooks/useChat";
 import { UI_COMPONENTS, isValidUIComponent } from "./GenerativeUI";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import type { UIComponent } from "@/types/ui";
 
 interface MessageBubbleProps {
   message: Message;
   onSendMessage?: (message: string) => void;
 }
+
+// Display-only component types that should be rendered full-width
+const DISPLAY_ONLY_TYPES = [
+  "itinerary_card",
+  "map_view",
+  "route_view",
+  "flight_card",
+];
+
+// Helper to render a single UI component
+const renderUIComponent = (
+  ui: UIComponent,
+  onSendMessage: ((msg: string) => void) | undefined,
+  isHandled: boolean,
+  key?: number
+) => {
+  if (!isValidUIComponent(ui.type)) return null;
+  const Component = UI_COMPONENTS[ui.type];
+  const isDisplayOnly = DISPLAY_ONLY_TYPES.includes(ui.type);
+  const isDisabled = !isDisplayOnly && isHandled;
+
+  return (
+    <div key={key} className="w-full">
+      <Component
+        {...ui.props}
+        onSubmit={onSendMessage || (() => {})}
+        disabled={isDisabled}
+      />
+    </div>
+  );
+};
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
@@ -17,27 +49,36 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.role === "user";
   const [showFullMessage, setShowFullMessage] = useState(false);
 
-  // Get the UI component if present
-  const UIComponent =
-    message.ui && isValidUIComponent(message.ui.type)
-      ? UI_COMPONENTS[message.ui.type]
-      : null;
+  // Collect all UI components (from ui_components array or single ui)
+  const uiComponents: UIComponent[] = [];
+  if (message.ui_components && message.ui_components.length > 0) {
+    uiComponents.push(...message.ui_components);
+  } else if (message.ui) {
+    uiComponents.push(message.ui);
+  }
 
-  // Check if this is a display-only component that should hide message bubble
-  const isItineraryCard = message.ui?.type === "itinerary_card";
+  // Check if any component is display-only
+  const hasDisplayOnlyComponent = uiComponents.some((ui) =>
+    DISPLAY_ONLY_TYPES.includes(ui.type)
+  );
 
   // Don't render empty assistant messages (no content, no UI, not streaming)
-  if (!isUser && !message.content && !UIComponent && !message.isStreaming) {
+  if (
+    !isUser &&
+    !message.content &&
+    uiComponents.length === 0 &&
+    !message.isStreaming
+  ) {
     return null;
   }
 
-  // For itinerary cards, render only the card without the bubble wrapper
-  if (isItineraryCard && UIComponent && message.ui) {
+  // For display-only components, render in full width mode
+  if (hasDisplayOnlyComponent && uiComponents.length > 0) {
     return (
-      <div className="flex flex-col w-full mb-4">
+      <div className="flex flex-col w-full mb-4 gap-4">
         {/* Collapsible full message */}
         {message.content && (
-          <div className="mb-4 px-1">
+          <div className="px-1">
             <button
               onClick={() => setShowFullMessage(!showFullMessage)}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
@@ -60,13 +101,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             )}
           </div>
         )}
-        {/* Itinerary cards */}
-        <div className="w-full">
-          <UIComponent
-            {...message.ui.props}
-            onSubmit={onSendMessage || (() => {})}
-          />
-        </div>
+        {/* Render all UI components */}
+        {uiComponents.map((ui, index) =>
+          renderUIComponent(ui, onSendMessage, !!message.uiHandled, index)
+        )}
       </div>
     );
   }
@@ -112,29 +150,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </div>
 
-        {/* Render dynamic UI component if present */}
-        {UIComponent &&
-          message.ui &&
-          (() => {
-            // Display-only components (like itinerary_card) should always render
-            const isDisplayOnly = message.ui.type === "itinerary_card";
-
-            // For interactive components, require onSendMessage (but still render if handled)
-            if (!isDisplayOnly && !onSendMessage && !message.uiHandled) {
-              return null;
-            }
-
-            // Pass disabled prop for handled interactive components
-            const isDisabled = !isDisplayOnly && message.uiHandled;
-
-            return (
-              <UIComponent
-                {...message.ui.props}
-                onSubmit={onSendMessage || (() => {})}
-                disabled={isDisabled}
-              />
-            );
-          })()}
+        {/* Render inline UI components (non-display-only) */}
+        {uiComponents.length > 0 &&
+          uiComponents.map((ui, index) =>
+            renderUIComponent(ui, onSendMessage, !!message.uiHandled, index)
+          )}
 
         <div
           className={cn(

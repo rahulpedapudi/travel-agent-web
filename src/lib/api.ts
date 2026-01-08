@@ -91,6 +91,7 @@ export interface StreamDoneEvent {
   session_id: string;
   chat_title?: string; // Backend-generated title after first message
   ui?: UIComponent;
+  ui_components?: UIComponent[]; // Multiple UI components (demo mode)
   // Text content can come from various fields
   response?: string;
   user_preferences_introduction?: string;
