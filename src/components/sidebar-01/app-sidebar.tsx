@@ -80,7 +80,7 @@ export function AppSidebar({
     <>
       <Sidebar
         collapsible="icon"
-        className="m-3 h-[calc(100svh-1.5rem)] rounded-[2rem] border border-white/5 shadow-2xl bg-transparent text-white **:data-[sidebar=sidebar]:bg-transparent overflow-hidden z-40"
+        className="m-3 h-[calc(100svh-1.5rem)] rounded-[2rem] border border-white/10 shadow-[0_0_15px_-3px_rgba(255,255,255,0.15)] bg-transparent text-white **:data-[sidebar=sidebar]:bg-transparent overflow-hidden z-40"
         style={
           {
             "--sidebar-background": "rgba(0, 0, 0, 0.0)", // Fully transparent
