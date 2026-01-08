@@ -44,6 +44,26 @@ const getTravelIcon = (method?: string) => {
   }
 };
 
+// Helper to compute duration from time strings
+const computeDuration = (startTime?: string, endTime?: string): string => {
+  if (!startTime || !endTime) return "";
+  try {
+    const [startH, startM] = startTime.split(":").map(Number);
+    const [endH, endM] = endTime.split(":").map(Number);
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+    const diffMinutes = endMinutes - startMinutes;
+    if (diffMinutes <= 0) return "";
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+    if (hours > 0 && mins > 0) return `${hours}h ${mins}m`;
+    if (hours > 0) return `${hours}h`;
+    return `${mins}m`;
+  } catch {
+    return "";
+  }
+};
+
 const ActivityItem = ({
   activity,
   isLast,
@@ -52,6 +72,14 @@ const ActivityItem = ({
   isLast: boolean;
   nextActivity?: ItineraryActivity;
 }) => {
+  // Normalize data from API format to display format
+  const startTime = activity.start_time || activity.time || "";
+  const title = activity.title || activity.place?.name || "";
+  const location = activity.location || "";
+  const activityType = activity.type || activity.place?.type || "";
+  const duration =
+    activity.duration || computeDuration(startTime, activity.end_time);
+
   // Determine if we need a travel segment after this activity
   const showTravel = !isLast && activity.travel_duration;
   const TravelIcon = getTravelIcon(activity.travel_method);
@@ -60,9 +88,7 @@ const ActivityItem = ({
     <div className="flex gap-4 group">
       {/* Left Column: Time */}
       <div className="w-16 flex flex-col items-end pt-1 shrink-0">
-        <span className="text-sm font-bold text-white">
-          {activity.start_time}
-        </span>
+        <span className="text-sm font-bold text-white">{startTime}</span>
         {activity.end_time && (
           <span className="text-xs text-muted-foreground/60">
             {activity.end_time}
@@ -94,19 +120,26 @@ const ActivityItem = ({
           {/* Title and Duration Pill */}
           <div className="flex items-start justify-between gap-2">
             <h4 className="font-semibold text-base text-white leading-tight">
-              {activity.title}
+              {title}
             </h4>
           </div>
 
           {/* Subtitle / Location */}
           <div className="text-sm text-muted-foreground flex items-center gap-1.5">
-            <span className="truncate">{activity.location}</span>
-            {activity.duration && (
+            {location && <span className="truncate">{location}</span>}
+            {activityType && !location && (
+              <span className="text-xs uppercase tracking-wider opacity-70">
+                {activityType}
+              </span>
+            )}
+            {duration && (
               <>
-                <span className="w-1 h-1 rounded-full bg-white/40" />
+                {(location || activityType) && (
+                  <span className="w-1 h-1 rounded-full bg-white/40" />
+                )}
                 <span className="flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded text-[10px] font-medium text-white border border-white/10 backdrop-blur-sm">
                   <Clock className="w-3 h-3 text-white/80" />
-                  {activity.duration}
+                  {duration}
                 </span>
               </>
             )}

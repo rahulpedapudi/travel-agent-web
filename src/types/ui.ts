@@ -92,13 +92,24 @@ export interface RatingFeedbackUI extends UIComponentBase {
 }
 
 // Itinerary Card
-export interface ItineraryActivity {
-  start_time: string;
-  end_time?: string;
-  duration: string;
-  title: string;
-  location: string;
+// API format activity (comes from backend)
+export interface ApiPlaceInfo {
+  name: string;
   type: string;
+}
+
+export interface ItineraryActivity {
+  // New API format
+  time?: string;
+  place?: ApiPlaceInfo;
+  // Legacy format
+  start_time?: string;
+  title?: string;
+  location?: string;
+  duration?: string;
+  type?: string;
+  // Common fields
+  end_time?: string;
   description?: string;
   notes?: string[];
   travel_duration?: string;

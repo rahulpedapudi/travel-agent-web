@@ -161,7 +161,7 @@ export const AuthForm = () => {
                   placeholder="John Doe"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 transition-all outline-none text-sm font-medium shadow-sm hover:bg-white"
+                  className="w-full p-3 rounded-xl bg-gray-50 border border-transparent focus:bg-white focus:border-gray-300 focus:ring-2 focus:ring-gray-100 transition-all outline-none text-sm text-black font-medium shadow-sm hover:bg-white"
                 />
               </div>
             </motion.div>
