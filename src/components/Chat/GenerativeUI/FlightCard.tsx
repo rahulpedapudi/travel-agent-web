@@ -72,7 +72,7 @@ const FlightOption: React.FC<FlightOptionProps> = ({
         {/* Duration */}
         <div className="flex flex-col items-center gap-1 min-w-[100px]">
           <span className="text-xs text-white/50">{flight.total_duration}</span>
-          <div className="relative w-full h-[2px] bg-gradient-to-r from-primary/40 via-primary to-emerald-500/40 rounded">
+          <div className="relative w-full h-[2px] bg-linear-to-r from-primary/40 via-primary to-emerald-500/40 rounded">
             <div className="absolute -top-1 left-0 w-2 h-2 bg-primary rounded-full" />
             <div className="absolute -top-1 right-0 w-2 h-2 bg-emerald-500 rounded-full" />
           </div>
@@ -192,7 +192,7 @@ export const FlightCard: React.FC<FlightCardProps> = ({
         <div className="px-6 py-4 border-t border-white/10 bg-white/5">
           <button
             onClick={handleBooking}
-            className="w-full py-3.5 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 transition-all duration-200 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5">
+            className="w-full py-3.5 px-6 rounded-xl font-semibold text-white bg-linear-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 transition-all duration-200 shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-0.5">
             Book {selectedFlight.price_formatted}
           </button>
         </div>
