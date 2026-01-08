@@ -72,7 +72,7 @@ const parseDatesFromInput = (
   // First, check for bracketed ISO date format: "Display Text [YYYY-MM-DD|YYYY-MM-DD]"
   const bracketPattern = /^(.+?)\s*\[(\d{4}-\d{2}-\d{2})\|(\d{4}-\d{2}-\d{2})\]$/;
   const bracketMatch = input.match(bracketPattern);
-  
+
   if (bracketMatch) {
     return {
       start: bracketMatch[2],
@@ -80,20 +80,20 @@ const parseDatesFromInput = (
       display: bracketMatch[1].trim(),
     };
   }
-  
+
   try {
     // Try to parse as JSON (from date picker - legacy format)
     const parsed = JSON.parse(input);
     if (parsed.start && parsed.end) {
-      return { 
-        start: parsed.start, 
+      return {
+        start: parsed.start,
         end: parsed.end,
         display: parsed.display // Include display text if available
       };
     }
   } catch {
     // Not JSON, try natural language parsing
-    
+
     // Month name mapping
     const months: Record<string, number> = {
       january: 0, jan: 0,
@@ -109,21 +109,21 @@ const parseDatesFromInput = (
       november: 10, nov: 10,
       december: 11, dec: 11,
     };
-    
+
     // Try to extract dates with patterns like:
     // "January 14-16, 2026" or "Jan 14 to Jan 16" or "14-16 January 2026"
-    
+
     // Pattern 1: "Month Day-Day, Year" (e.g., "January 14-16, 2026" or "January 14 - 16, 2026")
     const sameMonthPattern = /([a-z]+)\s*(\d{1,2})\s*[-–\s]+\s*(\d{1,2})(?:\s*,?\s*(\d{4}))?/i;
     const sameMonthMatch = input.match(sameMonthPattern);
-    
+
     if (sameMonthMatch) {
       const monthName = sameMonthMatch[1].toLowerCase();
       const startDay = parseInt(sameMonthMatch[2]);
       const endDay = parseInt(sameMonthMatch[3]);
       const year = sameMonthMatch[4] ? parseInt(sameMonthMatch[4]) : new Date().getFullYear();
       const month = months[monthName];
-      
+
       if (month !== undefined) {
         const startDate = new Date(year, month, startDay);
         const endDate = new Date(year, month, endDay);
@@ -134,11 +134,11 @@ const parseDatesFromInput = (
         };
       }
     }
-    
+
     // Pattern 2: "Month Day to Month Day" (e.g., "Jan 14 to Jan 18" or "Jan 14 - Feb 2")
     const diffMonthPattern = /([a-z]+)\s*(\d{1,2})\s*[-–\s]+\s*([a-z]+)\s*(\d{1,2})(?:\s*,?\s*(\d{4}))?/i;
     const diffMonthMatch = input.match(diffMonthPattern);
-    
+
     if (diffMonthMatch) {
       const startMonthName = diffMonthMatch[1].toLowerCase();
       const startDay = parseInt(diffMonthMatch[2]);
@@ -147,7 +147,7 @@ const parseDatesFromInput = (
       const year = diffMonthMatch[5] ? parseInt(diffMonthMatch[5]) : new Date().getFullYear();
       const startMonth = months[startMonthName];
       const endMonth = months[endMonthName];
-      
+
       if (startMonth !== undefined && endMonth !== undefined) {
         const startDate = new Date(year, startMonth, startDay);
         const endDate = new Date(year, endMonth, endDay);
@@ -158,15 +158,53 @@ const parseDatesFromInput = (
         };
       }
     }
-    
+
     // Pattern 3: ISO-like dates "2026-01-14 to 2026-01-16"
     const isoPattern = /(\d{4}-\d{2}-\d{2})\s*[-–to]+\s*(\d{4}-\d{2}-\d{2})/;
     const isoMatch = input.match(isoPattern);
-    
+
     if (isoMatch) {
       return { start: isoMatch[1], end: isoMatch[2] };
     }
-    
+
+    // Pattern 4: Duration (e.g., "5 days", "for a week", "2 weeks")
+    const durationPattern = /(\d+)\s*days?/i;
+    const durationMatch = input.match(durationPattern);
+
+    if (durationMatch) {
+      const days = parseInt(durationMatch[1]);
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(today.getDate() + 7); // Start next week
+      const end = new Date(start);
+      end.setDate(start.getDate() + days - 1); // Inclusive
+
+      return {
+        start: start.toISOString().split("T")[0],
+        end: end.toISOString().split("T")[0],
+        display: `${days} Days (${formatDateRange(start.toISOString().split("T")[0], end.toISOString().split("T")[0])})`
+      };
+    }
+
+    const weekPattern = /(\d+|a)\s*weeks?/i;
+    const weekMatch = input.match(weekPattern);
+
+    if (weekMatch) {
+      const weeks = weekMatch[1].toLowerCase() === 'a' ? 1 : parseInt(weekMatch[1]);
+      const days = weeks * 7;
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(today.getDate() + 7); // Start next week
+      const end = new Date(start);
+      end.setDate(start.getDate() + days - 1);
+
+      return {
+        start: start.toISOString().split("T")[0],
+        end: end.toISOString().split("T")[0],
+        display: `${days} Days (${formatDateRange(start.toISOString().split("T")[0], end.toISOString().split("T")[0])})`
+      };
+    }
+
     // Fallback: use today + 7 days if no pattern matched
     const today = new Date();
     const start = new Date(today);
@@ -188,9 +226,8 @@ const formatBudgetLabel = (amount: number): string => {
     return `₹${lakhs % 1 === 0 ? lakhs.toFixed(0) : lakhs.toFixed(1)}L`;
   } else if (amount >= 1000) {
     const thousands = amount / 1000;
-    return `₹${
-      thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)
-    }K`;
+    return `₹${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)
+      }K`;
   }
   return `₹${amount.toLocaleString("en-IN")}`;
 };
@@ -344,7 +381,17 @@ const parseOriginFromInput = (
     // Not JSON
   }
 
-  // Default to Delhi if no match
+  // Clean up input to use as city name (basic validation)
+  const cleanedInput = input.trim();
+  if (cleanedInput.length > 2 && !['yes', 'no', 'cancel', 'stop'].includes(cleanedInput.toLowerCase())) {
+    // Generate generic code
+    const code = cleanedInput.substring(0, 3).toUpperCase();
+    // Capitalize City Name
+    const city = cleanedInput.charAt(0).toUpperCase() + cleanedInput.slice(1);
+    return { city, code };
+  }
+
+  // Default to Delhi if really unsure
   return { city: "Delhi", code: "DEL" };
 };
 
@@ -511,11 +558,22 @@ Last question - who's traveling with you?`,
     const dest = conversationState.destination;
     if (!dest) return null;
 
+    // Calculate duration in days
+    let duration = 3; // Default
+    if (conversationState.dates?.start && conversationState.dates?.end) {
+      const start = new Date(conversationState.dates.start);
+      const end = new Date(conversationState.dates.end);
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Inclusive
+    }
+
     // Generate components with user's preferences (including dates)
     const components = generateDemoUIComponents(
       dest,
       passengers.count,
-      conversationState.dates?.start
+      conversationState.dates?.start,
+      duration,
+      conversationState.budget || 50000 // Default moderate budget
     );
 
     // Update flight card with user's origin, dates, and passengers
@@ -579,10 +637,10 @@ Last question - who's traveling with you?`,
       passengers.type === "solo"
         ? "solo adventure"
         : passengers.type === "couple"
-        ? "romantic getaway"
-        : passengers.type === "family"
-        ? "family trip"
-        : "trip with friends";
+          ? "romantic getaway"
+          : passengers.type === "family"
+            ? "family trip"
+            : "trip with friends";
 
     return {
       text: `Amazing! I've crafted the perfect **${companionLabel}** to ${dest.name}! 🎉
