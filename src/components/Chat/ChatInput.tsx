@@ -6,11 +6,21 @@ import { cn } from "@/lib/utils";
 interface ChatInputProps {
   onSend: (message: string) => void;
   isLoading: boolean;
+  initialValue?: string;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading }) => {
-  const [input, setInput] = useState("");
+export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, initialValue = "" }) => {
+  const [input, setInput] = useState(initialValue);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (initialValue) {
+      setInput(initialValue);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+  }, [initialValue]);
 
   useEffect(() => {
     if (!isLoading) {
