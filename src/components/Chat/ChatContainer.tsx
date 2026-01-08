@@ -4,11 +4,14 @@ import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { TaskList } from "./TaskList";
 import { Globe } from "../Home/Globe";
+import { useLocation } from "react-router-dom";
 
 export const ChatContainer = () => {
   const { messages, isLoading, thinkingMessage, tasks, sendUserMessage } =
     useChatContext();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const initialInput = location.state?.initialInput || "";
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -81,7 +84,11 @@ export const ChatContainer = () => {
         {/* Input Area - Fade gradient background for better readability/transition */}
         <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 flex justify-center z-10 pointer-events-none">
           <div className="w-full max-w-3xl pointer-events-auto">
-            <ChatInput onSend={sendUserMessage} isLoading={isLoading} />
+            <ChatInput
+              onSend={sendUserMessage}
+              isLoading={isLoading}
+              initialValue={initialInput}
+            />
           </div>
         </div>
       </div>
