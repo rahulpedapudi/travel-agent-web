@@ -522,6 +522,7 @@ Let me show you what I've planned:`,
 // Tokyo Demo Data
 export const TOKYO_DEMO: DemoDestination = {
   keywords: [
+    "Tokyo",
     "tokyo",
     "japan",
     "nippon",
@@ -743,6 +744,7 @@ Here's your curated itinerary:`,
 // Paris Demo Data
 export const PARIS_DEMO: DemoDestination = {
   keywords: [
+    "Paris",
     "paris",
     "france",
     "french",
@@ -954,6 +956,7 @@ Your personalized itinerary:`,
 export const NEW_YORK_DEMO: DemoDestination = {
   keywords: [
     "new york",
+    "New York",
     "nyc",
     "manhattan",
     "brooklyn",
@@ -1170,6 +1173,7 @@ Here's your personalized trip plan:`,
 export const LONDON_DEMO: DemoDestination = {
   keywords: [
     "london",
+    "London",
     "uk",
     "england",
     "british",
@@ -1384,6 +1388,7 @@ Here's your personalized trip plan:`,
 // Dubai Demo Data
 export const DUBAI_DEMO: DemoDestination = {
   keywords: [
+    "Dubai",
     "dubai",
     "uae",
     "emirates",
@@ -1568,6 +1573,7 @@ Here's your personalized trip plan:`,
 // Sydney Demo Data
 export const SYDNEY_DEMO: DemoDestination = {
   keywords: [
+    "Sydney",
     "sydney",
     "australia",
     "aussie",
@@ -1762,7 +1768,8 @@ Here's your personalized trip plan:`,
 // Rio de Janeiro Demo Data
 export const RIO_DEMO: DemoDestination = {
   keywords: [
-    "rio",
+    "Rio de Janeiro",
+    "Rio",
     "brazil",
     "brazilian",
     "copacabana",
@@ -2103,6 +2110,7 @@ Here's your personalized trip plan:`,
 // Delhi Demo Data
 export const DELHI_DEMO: DemoDestination = {
   keywords: [
+    "New Delhi",
     "delhi",
     "new delhi",
     "capital",
@@ -2309,6 +2317,7 @@ Here's your personalized trip plan:`,
 // Beijing Demo Data
 export const BEIJING_DEMO: DemoDestination = {
   keywords: [
+    "Beijing",
     "beijing",
     "china",
     "chinese",
@@ -2498,6 +2507,7 @@ Here's your personalized trip plan:`,
 // Mexico City Demo Data
 export const MEXICO_CITY_DEMO: DemoDestination = {
   keywords: [
+    "Mexico", 
     "mexico city",
     "mexico",
     "cdmx",
