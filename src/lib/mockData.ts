@@ -16,7 +16,18 @@ export interface DemoDestination {
   mapCenter: { lat: number; lng: number };
 }
 
-// Helper to generate dates from today
+// Helper to generate dates from a start date (or today if not provided)
+const getDateFromStart = (dayOffset: number, startDate?: string): string => {
+  const base = startDate ? new Date(startDate) : new Date();
+  // If no startDate provided, default to 7 days from today
+  if (!startDate) {
+    base.setDate(base.getDate() + 7);
+  }
+  base.setDate(base.getDate() + dayOffset);
+  return base.toISOString().split("T")[0];
+};
+
+// Legacy helper for static data initialization
 const getDate = (daysFromNow: number): string => {
   const date = new Date();
   date.setDate(date.getDate() + daysFromNow);
@@ -2733,9 +2744,16 @@ export const detectDemoDestination = (
 // Generate demo UI components for a destination
 export const generateDemoUIComponents = (
   dest: DemoDestination,
-  passengerCount: number = 2
+  passengerCount: number = 2,
+  startDate?: string
 ): UIComponent[] => {
   const components: UIComponent[] = [];
+
+  // Generate itinerary with user's dates if provided
+  const itineraryWithDates = dest.itinerary.map((day, index) => ({
+    ...day,
+    date: startDate ? getDateFromStart(index, startDate) : day.date,
+  }));
 
   // Flight Card
   components.push({
@@ -2743,7 +2761,7 @@ export const generateDemoUIComponents = (
     props: {
       origin: "Delhi",
       destination: dest.name,
-      departure_date: getDate(7),
+      departure_date: startDate || getDate(7),
       passengers: passengerCount,
       flights: dest.flights,
     },
@@ -2754,7 +2772,7 @@ export const generateDemoUIComponents = (
   components.push({
     type: "itinerary_card",
     props: {
-      days: dest.itinerary,
+      days: itineraryWithDates,
     },
     required: false,
   });

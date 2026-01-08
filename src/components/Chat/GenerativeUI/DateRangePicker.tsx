@@ -44,13 +44,30 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const handleSubmit = () => {
     if (disabled) return;
     if (date?.from && date?.to) {
-      const formattedRange = `${format(date.from, "MMMM d")}-${format(
-        date.to,
-        "d, yyyy"
-      )}`;
-      onSubmit(formattedRange);
+      // Format: "January 14 - 16, 2026" (easy to read and parse)
+      const startDateStr = format(date.from, "yyyy-MM-dd");
+      const endDateStr = format(date.to, "yyyy-MM-dd");
+      
+      // Check if same month
+      const sameMonth = date.from.getMonth() === date.to.getMonth() && 
+                        date.from.getFullYear() === date.to.getFullYear();
+      
+      let displayText: string;
+      if (sameMonth) {
+        // "January 14 - 16, 2026"
+        displayText = `${format(date.from, "MMMM d")} - ${format(date.to, "d, yyyy")}`;
+      } else {
+        // "January 28 - February 2, 2026"
+        displayText = `${format(date.from, "MMMM d")} - ${format(date.to, "MMMM d, yyyy")}`;
+      }
+      
+      // Send formatted text with hidden metadata
+      // Format: "January 14 - 16, 2026 [2026-01-14|2026-01-16]"
+      onSubmit(`${displayText} [${startDateStr}|${endDateStr}]`);
     } else if (date?.from) {
-      onSubmit(format(date.from, "MMMM d, yyyy"));
+      const dateStr = format(date.from, "yyyy-MM-dd");
+      const displayText = format(date.from, "MMMM d, yyyy");
+      onSubmit(`${displayText} [${dateStr}|${dateStr}]`);
     }
   };
 

@@ -19,6 +19,13 @@ const DISPLAY_ONLY_TYPES = [
   "flight_card",
 ];
 
+// Helper to strip hidden metadata from user messages
+// Removes patterns like "[2026-01-14|2026-01-16]" from display
+const stripHiddenMetadata = (content: string): string => {
+  // Remove bracketed ISO dates pattern: [YYYY-MM-DD|YYYY-MM-DD]
+  return content.replace(/\s*\[\d{4}-\d{2}-\d{2}\|\d{4}-\d{2}-\d{2}\]$/g, "").trim();
+};
+
 // Helper to render a single UI component
 const renderUIComponent = (
   ui: UIComponent,
@@ -128,7 +135,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             isUser && "text-primary-foreground"
           )}>
           {isUser ? (
-            <p className="whitespace-pre-wrap">{message.content}</p>
+            <p className="whitespace-pre-wrap">{stripHiddenMetadata(message.content)}</p>
           ) : message.isStreaming && !message.content ? (
             // Show typing indicator inside bubble when streaming with no content
             <div className="flex space-x-1 py-1">

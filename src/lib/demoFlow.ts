@@ -64,18 +64,110 @@ export const simulateThinkingDelay = (): number => {
   return 1000 + Math.random() * 1000; // 1-2 seconds
 };
 
-// Parse date range from user input (e.g., "Jan 15 to Jan 18" or structured response)
+// Parse date range from user input (e.g., "Jan 15 - 18, 2026 [2026-01-15|2026-01-18]" or structured response)
+// Returns start, end dates as ISO strings, and optional display text
 const parseDatesFromInput = (
   input: string
-): { start: string; end: string } | null => {
+): { start: string; end: string; display?: string } | null => {
+  // First, check for bracketed ISO date format: "Display Text [YYYY-MM-DD|YYYY-MM-DD]"
+  const bracketPattern = /^(.+?)\s*\[(\d{4}-\d{2}-\d{2})\|(\d{4}-\d{2}-\d{2})\]$/;
+  const bracketMatch = input.match(bracketPattern);
+  
+  if (bracketMatch) {
+    return {
+      start: bracketMatch[2],
+      end: bracketMatch[3],
+      display: bracketMatch[1].trim(),
+    };
+  }
+  
   try {
-    // Try to parse as JSON (from date picker)
+    // Try to parse as JSON (from date picker - legacy format)
     const parsed = JSON.parse(input);
     if (parsed.start && parsed.end) {
-      return { start: parsed.start, end: parsed.end };
+      return { 
+        start: parsed.start, 
+        end: parsed.end,
+        display: parsed.display // Include display text if available
+      };
     }
   } catch {
-    // Not JSON, try natural parsing - use dummy dates
+    // Not JSON, try natural language parsing
+    
+    // Month name mapping
+    const months: Record<string, number> = {
+      january: 0, jan: 0,
+      february: 1, feb: 1,
+      march: 2, mar: 2,
+      april: 3, apr: 3,
+      may: 4,
+      june: 5, jun: 5,
+      july: 6, jul: 6,
+      august: 7, aug: 7,
+      september: 8, sep: 8, sept: 8,
+      october: 9, oct: 9,
+      november: 10, nov: 10,
+      december: 11, dec: 11,
+    };
+    
+    // Try to extract dates with patterns like:
+    // "January 14-16, 2026" or "Jan 14 to Jan 16" or "14-16 January 2026"
+    
+    // Pattern 1: "Month Day-Day, Year" (e.g., "January 14-16, 2026" or "January 14 - 16, 2026")
+    const sameMonthPattern = /([a-z]+)\s*(\d{1,2})\s*[-–\s]+\s*(\d{1,2})(?:\s*,?\s*(\d{4}))?/i;
+    const sameMonthMatch = input.match(sameMonthPattern);
+    
+    if (sameMonthMatch) {
+      const monthName = sameMonthMatch[1].toLowerCase();
+      const startDay = parseInt(sameMonthMatch[2]);
+      const endDay = parseInt(sameMonthMatch[3]);
+      const year = sameMonthMatch[4] ? parseInt(sameMonthMatch[4]) : new Date().getFullYear();
+      const month = months[monthName];
+      
+      if (month !== undefined) {
+        const startDate = new Date(year, month, startDay);
+        const endDate = new Date(year, month, endDay);
+        return {
+          start: startDate.toISOString().split("T")[0],
+          end: endDate.toISOString().split("T")[0],
+          display: input.trim(), // Use the original input as display
+        };
+      }
+    }
+    
+    // Pattern 2: "Month Day to Month Day" (e.g., "Jan 14 to Jan 18" or "Jan 14 - Feb 2")
+    const diffMonthPattern = /([a-z]+)\s*(\d{1,2})\s*[-–\s]+\s*([a-z]+)\s*(\d{1,2})(?:\s*,?\s*(\d{4}))?/i;
+    const diffMonthMatch = input.match(diffMonthPattern);
+    
+    if (diffMonthMatch) {
+      const startMonthName = diffMonthMatch[1].toLowerCase();
+      const startDay = parseInt(diffMonthMatch[2]);
+      const endMonthName = diffMonthMatch[3].toLowerCase();
+      const endDay = parseInt(diffMonthMatch[4]);
+      const year = diffMonthMatch[5] ? parseInt(diffMonthMatch[5]) : new Date().getFullYear();
+      const startMonth = months[startMonthName];
+      const endMonth = months[endMonthName];
+      
+      if (startMonth !== undefined && endMonth !== undefined) {
+        const startDate = new Date(year, startMonth, startDay);
+        const endDate = new Date(year, endMonth, endDay);
+        return {
+          start: startDate.toISOString().split("T")[0],
+          end: endDate.toISOString().split("T")[0],
+          display: input.trim(),
+        };
+      }
+    }
+    
+    // Pattern 3: ISO-like dates "2026-01-14 to 2026-01-16"
+    const isoPattern = /(\d{4}-\d{2}-\d{2})\s*[-–to]+\s*(\d{4}-\d{2}-\d{2})/;
+    const isoMatch = input.match(isoPattern);
+    
+    if (isoMatch) {
+      return { start: isoMatch[1], end: isoMatch[2] };
+    }
+    
+    // Fallback: use today + 7 days if no pattern matched
     const today = new Date();
     const start = new Date(today);
     start.setDate(today.getDate() + 7);
@@ -348,7 +440,8 @@ I'd love to plan the perfect trip for you. Let me ask a few questions to persona
       conversationState.dates = dates;
       conversationState.step = "awaiting_budget";
 
-      const dateDisplay = formatDateRange(dates.start, dates.end);
+      // Use display text from parsed input if available, otherwise format from dates
+      const dateDisplay = dates.display || formatDateRange(dates.start, dates.end);
       const dest = conversationState.destination?.name || "your destination";
 
       return {
@@ -418,8 +511,12 @@ Last question - who's traveling with you?`,
     const dest = conversationState.destination;
     if (!dest) return null;
 
-    // Generate components with user's preferences
-    const components = generateDemoUIComponents(dest, passengers.count);
+    // Generate components with user's preferences (including dates)
+    const components = generateDemoUIComponents(
+      dest,
+      passengers.count,
+      conversationState.dates?.start
+    );
 
     // Update flight card with user's origin, dates, and passengers
     const flightCard = components.find((c) => c.type === "flight_card");
