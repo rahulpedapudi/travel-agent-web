@@ -1,105 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
-
-const DESTINATIONS = [
-  {
-    id: 1,
-    name: "Cappadocia",
-    country: "Turkey",
-    flag: "🇹🇷",
-    image:
-      "https://images.unsplash.com/photo-1641128324972-af3212f0f6bd?q=80&w=2070&auto=format&fit=crop",
-    hotels: "1,991",
-    description:
-      "Drift over fairy chimneys and honeycomb hills in a hot air balloon at sunrise.",
-    popular: false,
-  },
-  {
-    id: 2,
-    name: "Bali",
-    country: "Indonesia",
-    flag: "🇮🇩",
-    image:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1938&auto=format&fit=crop",
-    hotels: "1,345",
-    description:
-      "Discover tropical beaches, volcanic mountains, and lush rice paddies in paradise.",
-    popular: true,
-  },
-  {
-    id: 3,
-    name: "Dubai",
-    country: "UAE",
-    flag: "🇦🇪",
-    // New Reliable Dubai Image (Dubai Marina at Night)
-    image:
-      "https://images.pexels.com/photos/3680912/pexels-photo-3680912.jpeg?cs=srgb&dl=pexels-abbas-mohammed-1990079-3680912.jpg&fm=jpg",
-    hotels: "2,345",
-    description:
-      "Experience the ultimate in modern luxury, shopping, and lively nightlife.",
-    popular: true,
-  },
-  {
-    id: 4,
-    name: "Agra",
-    country: "India",
-    flag: "🇮🇳",
-    // Taj Mahal
-    image:
-      "https://images.unsplash.com/photo-1564507592333-c60657eea523?q=80&w=2071&auto=format&fit=crop",
-    hotels: "890",
-    description:
-      "Witness the timeless beauty of the Taj Mahal, a symbol of eternal love.",
-  },
-  {
-    id: 5,
-    name: "Paris",
-    country: "France",
-    flag: "🇫🇷",
-    // Eiffel Tower
-    image:
-      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2146&auto=format&fit=crop",
-    hotels: "3,100",
-    description:
-      "Walk the romantic streets of the City of Light and marvel at the Eiffel Tower.",
-    popular: true,
-  },
-  {
-    id: 6,
-    name: "Ha Long Bay",
-    country: "Vietnam",
-    flag: "🇻🇳",
-    image:
-      "https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?q=80&w=1935&auto=format&fit=crop",
-    hotels: "2,178",
-    description:
-      "Navigate through emerald waters and thousands of towering limestone islands.",
-  },
-  {
-    id: 7,
-    name: "Kyoto",
-    country: "Japan",
-    flag: "🇯🇵",
-    image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop",
-    hotels: "1,560",
-    description:
-      "Immerse yourself in classical Buddhist temples, gardens, and imperial palaces.",
-  },
-  {
-    id: 8,
-    name: "New York",
-    country: "USA",
-    flag: "🇺🇸",
-    // Times Square
-    image:
-      "https://images.pexels.com/photos/1239162/pexels-photo-1239162.jpeg?cs=srgb&dl=pexels-mikel-1239162.jpg&fm=jpg",
-    hotels: "4,200",
-    description:
-      "Feel the energy of the concrete jungle where dreams are made of.",
-    popular: true,
-  },
-];
+import { useNavigate } from "react-router-dom";
+import { DESTINATIONS } from "@/data/destinations";
 
 const DestinationCard = ({
   dest,
@@ -108,12 +10,16 @@ const DestinationCard = ({
   dest: (typeof DESTINATIONS)[0];
   index: number;
 }) => {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative h-full w-full overflow-hidden rounded-[32px] cursor-pointer">
+      onClick={() => navigate(`/explore/${dest.id}`)}
+      className="group relative h-full w-full overflow-hidden rounded-[32px] cursor-pointer"
+    >
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
@@ -139,7 +45,7 @@ const DestinationCard = ({
         {/* Bottom Meta Row */}
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
           <div className="flex items-center gap-2 text-xs font-medium text-white/60">
-            {/* @ts-ignore - TS inference might be tricky with mixed array */}
+            {/* @ts-ignore */}
             {dest.popular ? (
               <>
                 <MapPin className="w-3 h-3 text-teal-400" />

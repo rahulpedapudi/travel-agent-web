@@ -5,6 +5,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthPage } from "@/components/Auth/AuthPage";
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute";
 import { PopularDestinations } from "@/components/Popular/PopularDestinations";
+import { DestinationDetails } from "@/components/Popular/DestinationDetails";
 import { MyTripsPage } from "@/components/Trips/MyTripsPage";
 import { MapProvider } from "@/components/MapProvider";
 
@@ -23,6 +24,7 @@ function App() {
           }>
           <Route path="/" element={<HomePage />} />
           <Route path="/explore" element={<PopularDestinations />} />
+          <Route path="/explore/:id" element={<DestinationDetails />} />
           <Route path="/trips" element={<MyTripsPage />} />
           <Route path="/c/:chatId" element={<ChatContainer />} />
         </Route>
