@@ -160,6 +160,47 @@ export interface QuickActionsUI extends UIComponentBase {
   props: Omit<QuickActionsProps, "onSubmit">;
 }
 
+// Flight Card
+export interface FlightSegment {
+  departure_airport: string;
+  departure_city: string;
+  departure_time: string;
+  arrival_airport: string;
+  arrival_city: string;
+  arrival_time: string;
+  duration: string;
+  airline: string;
+  flight_number: string;
+  aircraft?: string;
+  cabin_class?: string;
+}
+
+export interface Flight {
+  id: string;
+  segments: FlightSegment[];
+  total_duration: string;
+  stops: number;
+  price: number;
+  currency: string;
+  price_formatted: string;
+  booking_class: string;
+}
+
+export interface FlightCardProps {
+  origin: string;
+  destination: string;
+  departure_date: string;
+  passengers: number;
+  flights: Flight[];
+  onSubmit?: (value: string) => void;
+  [key: string]: unknown;
+}
+
+export interface FlightCardUI extends UIComponentBase {
+  type: "flight_card";
+  props: Omit<FlightCardProps, "onSubmit">;
+}
+
 // Union type for all UI components
 export type UIComponent =
   | BudgetSliderUI
@@ -170,7 +211,8 @@ export type UIComponent =
   | ItineraryCardUI
   | QuickActionsUI
   | MapViewUI
-  | RouteViewUI;
+  | RouteViewUI
+  | FlightCardUI;
 
 // Helper type for component props with onSubmit
 export type UIComponentType = UIComponent["type"];

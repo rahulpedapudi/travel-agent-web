@@ -7,6 +7,7 @@ import { ItineraryCard } from "./ItineraryCard";
 import { QuickActions } from "./QuickActions";
 import { MapView } from "./MapView";
 import { RouteView } from "./RouteView";
+import { FlightCard } from "./FlightCard";
 import type { UIComponentType } from "@/types/ui";
 
 // Registry mapping ui.type to React components
@@ -23,6 +24,7 @@ export const UI_COMPONENTS: Record<
   quick_actions: QuickActions,
   map_view: MapView,
   route_view: RouteView,
+  flight_card: FlightCard,
 };
 
 // Helper to check if a component type is valid

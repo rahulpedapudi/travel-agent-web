@@ -7,4 +7,5 @@ export { ItineraryCard } from "./ItineraryCard";
 export { QuickActions } from "./QuickActions";
 export { MapView } from "./MapView";
 export { RouteView } from "./RouteView";
+export { FlightCard } from "./FlightCard";
 export { UI_COMPONENTS, isValidUIComponent } from "./componentRegistry";
