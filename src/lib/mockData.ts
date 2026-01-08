@@ -14,6 +14,7 @@ export interface DemoDestination {
   itinerary: ItineraryDay[];
   mapMarkers: MapMarker[];
   mapCenter: { lat: number; lng: number };
+  imageUrl?: string;
 }
 
 // Helper to generate dates from a start date (or today if not provided)
@@ -2745,15 +2746,32 @@ export const detectDemoDestination = (
 export const generateDemoUIComponents = (
   dest: DemoDestination,
   passengerCount: number = 2,
-  startDate?: string
+  startDate?: string,
+  targetDuration: number = 3,
+  budget: number = 50000
 ): UIComponent[] => {
   const components: UIComponent[] = [];
 
-  // Generate itinerary with user's dates if provided
-  const itineraryWithDates = dest.itinerary.map((day, index) => ({
-    ...day,
-    date: startDate ? getDateFromStart(index, startDate) : day.date,
-  }));
+  // 1. Handle Duration: Generate appropriate number of days
+  const baseItinerary = dest.itinerary;
+  const finalItinerary = [];
+
+  for (let i = 0; i < targetDuration; i++) {
+    // Cycle through base itinerary days if target > base
+    const baseDayIndex = i % baseItinerary.length;
+    const baseDay = baseItinerary[baseDayIndex];
+
+    // Create new day with correct date
+    const date = startDate ? getDateFromStart(i, startDate) : getDate(7 + i);
+
+    finalItinerary.push({
+      ...baseDay,
+      day_number: i + 1,
+      date: date,
+      // Enhance activities based on budget and type
+      activities: baseDay.activities.map(act => enhanceActivityWithBudget(act, budget, i))
+    });
+  }
 
   // Flight Card
   components.push({
@@ -2772,11 +2790,11 @@ export const generateDemoUIComponents = (
   components.push({
     type: "itinerary_card",
     props: {
-      days: itineraryWithDates,
+      days: finalItinerary,
       title: `${dest.name} Adventure`,
       destination: dest.name,
       imageUrl: dest.imageUrl || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop",
-      budget: "Calculated",
+      budget: budget >= 100000 ? "Luxury" : budget >= 30000 ? "Moderate" : "Budget",
     },
     required: false,
   });
@@ -2794,6 +2812,74 @@ export const generateDemoUIComponents = (
   });
 
   return components;
+};
+
+// Helper to enhance activities with descriptions and budget-aware modifications
+const enhanceActivityWithBudget = (activity: any, budget: number, dayIndex: number) => {
+  const isLuxury = budget >= 100000;
+  const isBudget = budget < 30000;
+
+  let newAct = { ...activity };
+  let desc = "";
+  let notes: string[] = [];
+
+  // Enhance Hotel
+  if (newAct.place?.type === "hotel" || newAct.place?.name?.toLowerCase().includes("hotel")) {
+    if (isLuxury) {
+      newAct.place.name = dayIndex === 0 ? "Grand Luxury Palace Check-in" : "Grand Luxury Palace";
+      desc = "Experience world-class hospitality at one of the city's finest 5-star properties. Enjoy a welcome drink and spa access.";
+      notes.push("Sea view suite included");
+    } else if (isBudget) {
+      newAct.place.name = dayIndex === 0 ? "City Backpackers Check-in" : "City Backpackers Hostel";
+      desc = "A vibrant community hostel in the heart of the city. Great for meeting fellow travelers.";
+      notes.push("Breakfast included");
+    } else {
+      // Moderate - keep original name but add desc
+      desc = "Relax at this centrally located 4-star boutique hotel with modern amenities.";
+    }
+  }
+
+  // Enhance Food
+  else if (newAct.place?.type === "food" || newAct.place?.name?.toLowerCase().includes("restaurant") || newAct.place?.name?.toLowerCase().includes("food")) {
+    if (isLuxury) {
+      desc = "A fine dining culinary journey featuring gourmet local specialties and international wines.";
+    } else if (isBudget) {
+      // Maybe change name if it sounds fancy, otherwise just desc
+      desc = "Authentic local street food experience. Taste the real flavors of the city at affordable prices.";
+      notes.push("Local favorite");
+    } else {
+      desc = "Enjoy a delicious meal at this highly-rated local eatery known for its authentic ambiance.";
+    }
+  }
+
+  // Enhance Attraction/Nature
+  else {
+    // Add generic descriptions based on name if missing
+    const name = newAct.place?.name || "";
+    if (!newAct.description) {
+      if (name.includes("Beach") || newAct.place?.type === "nature") {
+        desc = "Soak in the sun and enjoy the fresh breeze. Perfect for photography and relaxation.";
+      } else if (name.includes("Museum") || name.includes("History") || name.includes("Walk")) {
+        desc = "Dive deep into history and culture. Explore ancient artifacts and learn about the local heritage.";
+      } else if (name.includes("Shopping") || name.includes("Market")) {
+        desc = "Shop for unique souvenirs, handicrafts, and local fashion at this bustling market.";
+      } else {
+        desc = "Explore the city's iconic landmarks and immerse yourself in the local vibe.";
+      }
+    }
+  }
+
+  // Apply description if not already set (or override if we want consistency)
+  if (!newAct.description) {
+    newAct.description = desc;
+  }
+  if (!newAct.notes) {
+    newAct.notes = notes;
+  } else {
+    newAct.notes = [...newAct.notes, ...notes];
+  }
+
+  return newAct;
 };
 
 // Default response when no destination detected
