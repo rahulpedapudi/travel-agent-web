@@ -89,24 +89,68 @@ const parseDatesFromInput = (
   return null;
 };
 
+// Format budget amount to readable label
+const formatBudgetLabel = (amount: number): string => {
+  if (amount >= 100000) {
+    const lakhs = amount / 100000;
+    return `₹${lakhs % 1 === 0 ? lakhs.toFixed(0) : lakhs.toFixed(1)}L`;
+  } else if (amount >= 1000) {
+    const thousands = amount / 1000;
+    return `₹${
+      thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)
+    }K`;
+  }
+  return `₹${amount.toLocaleString("en-IN")}`;
+};
+
 // Parse budget from user input
 const parseBudgetFromInput = (
   input: string
 ): { amount: number; label: string } | null => {
+  // Try to parse as JSON first (from BudgetSlider)
   try {
     const parsed = JSON.parse(input);
-    if (parsed.value) {
-      return { amount: parseInt(parsed.value), label: parsed.label || "" };
+    if (parsed.value !== undefined) {
+      const amount = parseInt(parsed.value);
+      // Use the label from slider if provided, otherwise format ourselves
+      const label = parsed.label || formatBudgetLabel(amount);
+      return { amount, label };
     }
   } catch {
-    // Try to extract number
-    const match = input.match(/(\d+)/);
-    if (match) {
-      return { amount: parseInt(match[1]), label: `₹${match[1]}` };
-    }
+    // Not JSON, continue
   }
+
+  // Try to extract number with L/Lakh/K notation
+  const lakhMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:L|lakh|lac)/i);
+  if (lakhMatch) {
+    const amount = Math.round(parseFloat(lakhMatch[1]) * 100000);
+    return { amount, label: formatBudgetLabel(amount) };
+  }
+
+  const thousandMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:K|thousand)/i);
+  if (thousandMatch) {
+    const amount = Math.round(parseFloat(thousandMatch[1]) * 1000);
+    return { amount, label: formatBudgetLabel(amount) };
+  }
+
+  // Try plain number (could be full amount like 110000)
+  const plainMatch = input.match(/(\d{4,})/); // At least 4 digits
+  if (plainMatch) {
+    const amount = parseInt(plainMatch[1]);
+    return { amount, label: formatBudgetLabel(amount) };
+  }
+
+  // Try smaller numbers
+  const smallMatch = input.match(/(\d+)/);
+  if (smallMatch) {
+    const num = parseInt(smallMatch[1]);
+    // If it's a small number, assume it might be in thousands
+    const amount = num < 1000 ? num * 1000 : num;
+    return { amount, label: formatBudgetLabel(amount) };
+  }
+
   // Default moderate budget
-  return { amount: 50000, label: "₹50,000" };
+  return { amount: 50000, label: "₹50K" };
 };
 
 // Parse passengers from user input
