@@ -3,39 +3,112 @@ import { TripCard } from "./TripCard";
 import { TripItineraryModal } from "./TripItineraryModal";
 import { myTrips, suggestions, type Trip } from "./data";
 import { motion } from "framer-motion";
+import { useTrips } from "@/hooks/useTrips";
+import { Loader2, Calendar } from "lucide-react";
 
 export function MyTripsPage() {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const { trips: realTrips, loading } = useTrips();
 
-  const handleTripClick = (trip: Trip) => {
-    setSelectedTrip(trip);
+  // Combine real trips (Firestore) with mock trips (Legacy)
+  // We map real trips to match the Trip interface exactly if needed, 
+  // though we updated the mapping logic in the render.
+
+  const allTrips = [
+    ...realTrips.map(t => ({
+      id: t.id,
+      title: t.title,
+      destination: t.destination,
+      dateRange: `${t.startDate} - ${t.endDate}`,
+      imageUrl: t.imageUrl,
+      status: t.status,
+      itinerary: t.itineraryData || [],
+      stats: { duration: "N/A", placesVisited: 0, distance: "N/A" },
+      // Add budget to match extended Trip interface if we add it, or just ignore for now
+    })),
+    ...myTrips
+  ];
+
+  const handleTripClick = (trip: any) => {
+    // Map Firestore trip to UI Trip logic is now handled in the array creation roughly,
+    // but specific click handling might need normalization if the object shapes differ slightly.
+    // Since we merged them, 'trip' should be consistent enough for basic display.
+
+    // If it's a real trip (has itineraryData), ensure we pass that.
+    const uiTrip: Trip = {
+      id: trip.id,
+      title: trip.title,
+      destination: trip.destination || trip.location, // Fallback
+      dateRange: trip.dateRange || trip.dates, // Fallback
+      imageUrl: trip.imageUrl,
+      status: trip.status || "upcoming",
+      itinerary: trip.itinerary || trip.itineraryData || [],
+      stats: trip.stats || {
+        duration: "N/A",
+        placesVisited: 0,
+        distance: "N/A"
+      }
+    };
+    setSelectedTrip(uiTrip);
     setModalOpen(true);
   };
 
   return (
-    <div className="flex-1 bg-zinc-950 p-8 md:p-12 bg-linear-to-b from-zinc-950/90 to-transparent backdrop-blur-sm">
+    <div className="flex-1 bg-zinc-950 p-8 md:p-12 bg-linear-to-b from-zinc-950/90 to-transparent backdrop-blur-sm min-h-screen">
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
-        <h1 className="text-white/90 font-serif tracking-wider text-xl hidden md:block">
-          Your Trips
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-white/90 font-serif tracking-wider text-xl hidden md:block">
+            Your Trips
+          </h1>
+          <span className="text-xs font-mono text-zinc-500">{allTrips.length} TRIPS SAVED</span>
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20 opacity-50">
+            <Loader2 className="w-8 h-8 animate-spin text-teal-500 mb-4" />
+            <p className="text-xs uppercase tracking-widest text-zinc-400">Syncing with cloud...</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && allTrips.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 border border-white/5 bg-white/5 rounded-3xl">
+            <Calendar className="w-12 h-12 text-zinc-600 mb-6 stroke-1" />
+            <h3 className="text-xl text-white font-serif mb-2">No trips yet</h3>
+            <p className="text-zinc-400 text-sm max-w-sm text-center">Start a chat with our AI agent to plan your first dream vacation.</p>
+          </div>
+        )}
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {myTrips.map((trip, index) => (
+          {allTrips.map((trip, index) => (
             <motion.div
               key={trip.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}>
-              <TripCard trip={trip} onClick={handleTripClick} />
+              <TripCard
+                trip={{
+                  id: trip.id,
+                  title: trip.title,
+                  destination: trip.destination,
+                  dateRange: trip.dateRange,
+                  imageUrl: trip.imageUrl,
+                  status: (trip.status as any),
+                  itinerary: trip.itinerary,
+                  stats: trip.stats
+                }}
+                onClick={() => handleTripClick(trip)}
+              />
             </motion.div>
           ))}
         </div>
 
         {/* Suggestions Section */}
-        <div className="space-y-6 pt-8 border-t border-white/10">
+        <div className="space-y-6 pt-12 border-t border-white/10">
           <div className="flex items-center gap-3">
             <div className="h-8 w-1 bg-linear-to-b from-teal-400 to-cyan-500 rounded-full" />
             <h2 className="text-2xl md:text-3xl font-serif text-white tracking-tight">
@@ -52,7 +125,12 @@ export function MyTripsPage() {
                 key={item.id}
                 whileHover={{ scale: 1.02 }}
                 className="group relative h-[250px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 hover:border-teal-500/50 transition-all cursor-pointer"
-                onClick={() => handleTripClick(item)}>
+                onClick={() => {
+                  // Create dummy ui trip for suggestion
+                  const uiTrip: Trip = { ...item, status: "suggested" };
+                  setSelectedTrip(uiTrip);
+                  setModalOpen(true);
+                }}>
                 <img
                   src={item.imageUrl}
                   alt={item.title}
@@ -76,13 +154,6 @@ export function MyTripsPage() {
               </motion.div>
             ))}
           </div>
-        </div>
-
-        {/* Empty State / Footer hint */}
-        <div className="text-center pt-12 pb-8 opacity-50">
-          <p className="text-sm text-gray-500 uppercase tracking-widest">
-            Your journey is just beginning
-          </p>
         </div>
       </div>
 

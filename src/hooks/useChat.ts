@@ -134,6 +134,9 @@ export const useChat = () => {
           content: m.content,
           timestamp: m.timestamp,
           ui: m.ui ? normalizeUIComponent(m.ui) : undefined,
+          ui_components: m.ui_components
+            ? m.ui_components.map((c: any) => normalizeUIComponent(c)).filter((c): c is UIComponent => c !== undefined)
+            : undefined,
           isStreaming: false,
           uiHandled: true, // Mark as handled since they're loaded from history
         })

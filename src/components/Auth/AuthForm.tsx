@@ -26,7 +26,7 @@ export const AuthForm = () => {
       setIsSubmitting(true);
       clearError();
       await signInWithGoogle();
-      navigate("/");
+      navigate("/onboarding");
     } catch (error) {
       // Error is handled by useAuth
       console.error("Google sign in failed:", error);
@@ -48,7 +48,7 @@ export const AuthForm = () => {
       } else {
         await signUpWithEmail(email, password);
       }
-      navigate("/");
+      navigate("/onboarding");
     } catch (error) {
       // Error is handled by useAuth
       console.error("Email auth failed:", error);
@@ -78,22 +78,19 @@ export const AuthForm = () => {
       {/* Tabs */}
       <div className="flex bg-gray-100/80 backdrop-blur-sm rounded-full p-1 mb-5 relative mx-auto w-full max-w-xs h-10 shadow-inner">
         <div
-          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-md transition-all duration-300 ease-out ${
-            !isLogin ? "left-1" : "left-[calc(50%+2px)]"
-          }`}
+          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-full shadow-md transition-all duration-300 ease-out ${!isLogin ? "left-1" : "left-[calc(50%+2px)]"
+            }`}
         />
         <button
           onClick={() => handleTabSwitch(false)}
-          className={`flex-1 relative z-10 text-sm font-semibold transition-colors duration-200 ${
-            !isLogin ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-          }`}>
+          className={`flex-1 relative z-10 text-sm font-semibold transition-colors duration-200 ${!isLogin ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+            }`}>
           Sign Up
         </button>
         <button
           onClick={() => handleTabSwitch(true)}
-          className={`flex-1 relative z-10 text-sm font-semibold transition-colors duration-200 ${
-            isLogin ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
-          }`}>
+          className={`flex-1 relative z-10 text-sm font-semibold transition-colors duration-200 ${isLogin ? "text-gray-900" : "text-gray-500 hover:text-gray-700"
+            }`}>
           Log In
         </button>
       </div>
