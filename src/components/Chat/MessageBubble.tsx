@@ -95,7 +95,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               )}
             </button>
             {showFullMessage && (
-              <div className="mt-2 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+              <div className="mt-2 p-3 bg-muted/30 rounded-lg text-sm text-foreground border border-border/40 prose prose-sm dark:prose-invert max-w-none break-all">
                 <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
             )}
