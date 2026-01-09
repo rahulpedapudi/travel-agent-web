@@ -48,13 +48,13 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
       {/* Slider */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-white/70">
             {formatCurrency(min)}
           </span>
-          <span className="text-2xl font-semibold text-primary">
+          <span className="text-2xl font-semibold text-white/70">
             {formatCurrency(value[0])}
           </span>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm text-white/70">
             {formatCurrency(max)}
           </span>
         </div>
@@ -64,7 +64,7 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
           min={min}
           max={max}
           step={step}
-          className={cn("w-full", disabled && "pointer-events-none")}
+          className={cn("w-full text-white", disabled && "pointer-events-none")}
           disabled={disabled}
         />
       </div>

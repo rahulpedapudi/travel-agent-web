@@ -319,7 +319,7 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (props) => {
           size="sm"
           onClick={handleSave}
           disabled={isSaved || isSaving}
-          className={`text-xs gap-2 ${isSaved ? "text-teal-400 hover:text-teal-300" : "text-zinc-400 hover:text-white"}`}
+          className={`text-xs gap-2 rounded-lg transition-all ${isSaved ? "text-teal-400 hover:text-teal-300 hover:bg-teal-500/10" : "text-zinc-400 hover:text-white hover:bg-white/10"}`}
         >
           {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
           {isSaving ? "Saving..." : isSaved ? "Saved to Trips" : "Save Trip"}
