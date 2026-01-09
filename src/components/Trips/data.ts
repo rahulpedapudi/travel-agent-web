@@ -1,10 +1,38 @@
 
 
+// Legacy itinerary format (mock data)
 export interface DailyItinerary {
     day: number;
     title: string;
     activities: string[];
 }
+
+// New itinerary format (from AI/saved trips) - more flexible
+export interface ItineraryActivity {
+    time?: string;
+    start_time?: string;
+    end_time?: string;
+    title?: string;
+    place?: { name?: string; type?: string };
+    location?: string;
+    duration?: string;
+    type?: string;
+    description?: string;
+    notes?: string[];
+    travel_duration?: string;
+    travel_method?: string;
+    travel_note?: string;
+}
+
+export interface ItineraryDay {
+    day_number: number;
+    date: string;
+    theme?: string;
+    activities: ItineraryActivity[];
+}
+
+// Union type that can represent both formats
+export type ItineraryItem = DailyItinerary | ItineraryDay;
 
 export interface Trip {
     id: string;
@@ -13,7 +41,7 @@ export interface Trip {
     dateRange: string;
     imageUrl: string;
     status: "completed" | "upcoming" | "planning" | "suggested"; // Added suggested
-    itinerary: DailyItinerary[];
+    itinerary: ItineraryItem[];
     stats: {
         duration: string;
         placesVisited: number;
@@ -23,6 +51,7 @@ export interface Trip {
     matchScore?: number;
     description?: string;
 }
+
 
 export const myTrips: Trip[] = [
     {

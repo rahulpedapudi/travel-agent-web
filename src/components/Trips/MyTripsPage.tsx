@@ -5,6 +5,7 @@ import { myTrips, suggestions, type Trip } from "./data";
 import { motion } from "framer-motion";
 import { useTrips } from "@/hooks/useTrips";
 import { Loader2, Calendar } from "lucide-react";
+import { getDestinationImage } from "@/utils/destinationImages";
 
 export function MyTripsPage() {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
@@ -16,17 +17,32 @@ export function MyTripsPage() {
   // though we updated the mapping logic in the render.
 
   const allTrips = [
-    ...realTrips.map(t => ({
-      id: t.id,
-      title: t.title,
-      destination: t.destination,
-      dateRange: `${t.startDate} - ${t.endDate}`,
-      imageUrl: t.imageUrl,
-      status: t.status,
-      itinerary: t.itineraryData || [],
-      stats: { duration: "N/A", placesVisited: 0, distance: "N/A" },
-      // Add budget to match extended Trip interface if we add it, or just ignore for now
-    })),
+    ...realTrips.map(t => {
+      const itinerary = t.itineraryData || [];
+      const numDays = itinerary.length;
+      // Count total activities across all days
+      const totalActivities = itinerary.reduce((acc: number, day: { activities?: unknown[] }) => {
+        return acc + (day.activities?.length || 0);
+      }, 0);
+      
+      return {
+        id: t.id,
+        title: t.title,
+        destination: t.destination,
+        dateRange: `${t.startDate} - ${t.endDate}`,
+        // Use destination image utility as fallback for older trips with generic images
+        imageUrl: t.imageUrl && !t.imageUrl.includes('photo-1469854523086') 
+          ? t.imageUrl 
+          : getDestinationImage(t.destination),
+        status: t.status,
+        itinerary: itinerary,
+        stats: { 
+          duration: numDays > 0 ? `${numDays} Day${numDays > 1 ? 's' : ''}` : "N/A", 
+          placesVisited: totalActivities,
+          distance: "—" // We don't have distance data from AI
+        },
+      };
+    }),
     ...myTrips
   ];
 

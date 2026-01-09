@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddToCalendarButton } from "./AddToCalendarButton";
+import { getDestinationImage } from "@/utils/destinationImages";
 
 const getTravelIcon = (method?: string) => {
   const normalizedMethod = method?.toLowerCase();
@@ -292,12 +293,16 @@ export const ItineraryCard: React.FC<ItineraryCardProps> = (props) => {
       // Ideally this card is part of a larger context.
       // For now, we'll try to guess or use a prompt.
 
+      // Get destination-specific image if not provided
+      const destination = props.destination || "Custom Destination";
+      const imageUrl = props.imageUrl || getDestinationImage(destination);
+
       await saveTrip({
-        title: props.title || `Trip to ${props.destination || "Unknown"}`,
-        destination: props.destination || "Custom Destination",
+        title: props.title || `Trip to ${destination}`,
+        destination: destination,
         startDate: firstDay.date,
         endDate: lastDay.date,
-        imageUrl: props.imageUrl || "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop",
+        imageUrl: imageUrl,
         totalBudget: props.budget || "Calculated",
       }, days);
 

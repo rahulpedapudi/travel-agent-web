@@ -100,15 +100,14 @@ export const DestinationDetails = () => {
                     </div>
 
                     {/* Quick Actions / Map Placeholder */}
-                    <div className="bg-zinc-900 rounded-3xl border border-white/5 p-6 h-full min-h-[200px] flex items-center justify-center relative overflow-hidden">
-                        {/* Placeholder for map - could be an image or real map */}
+                    {/* <div className="bg-zinc-900 rounded-3xl border border-white/5 p-6 h-full min-h-[200px] flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/0,0,1,0/400x400')] bg-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-500" />
                         <div className="relative z-10 text-center">
                             <button className="px-6 py-3 bg-white text-black font-semibold rounded-full shadow-lg hover:scale-105 transition-transform">
                                 View on Map
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Suggestions / Attractions */}
