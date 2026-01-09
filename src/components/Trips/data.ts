@@ -219,3 +219,61 @@ export const suggestions: Trip[] = [
         ]
     },
 ];
+
+export const extraSuggestions: Trip[] = [
+    {
+        id: "sug-5",
+        title: "Maldives Paradise",
+        destination: "Malé, Maldives",
+        description: "Escape to crystal clear waters and overwater bungalows for the ultimate relaxation.",
+        imageUrl: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=2667&auto=format&fit=crop",
+        matchScore: 97,
+        status: "suggested",
+        dateRange: "Recommended: Nov - Apr",
+        stats: { duration: "5 Days", placesVisited: 3, distance: "10 km" },
+        itinerary: [
+            { day: 1, title: "Arrival", activities: ["Speedboat Transfer", "Check-in", "Sunset Dinner"] },
+            { day: 2, title: "Water Sports", activities: ["Snorkeling", "Jet Skiing", "Beach Relaxation"] },
+            { day: 3, title: "Island Hopping", activities: ["Local Island Visit", "Dolphin Watching", "BBQ Lunch"] },
+            { day: 4, title: "Wellness", activities: ["Spa Day", "Yoga Session", "Stargazing Cruise"] },
+            { day: 5, title: "Departure", activities: ["Souvenir Shopping", "Transfer to Airport"] }
+        ]
+    },
+    {
+        id: "sug-6",
+        title: "Iceland Northern Lights",
+        destination: "Reykjavik, Iceland",
+        description: "Chase the aurora borealis and explore dramatic landscapes of fire and ice.",
+        imageUrl: "https://images.unsplash.com/photo-1476610182048-b716b8518aae?q=80&w=2659&auto=format&fit=crop",
+        matchScore: 94,
+        status: "suggested",
+        dateRange: "Recommended: Sep - Mar",
+        stats: { duration: "6 Days", placesVisited: 8, distance: "300 km" },
+        itinerary: [
+            { day: 1, title: "Reykjavik", activities: ["Hallgrimskirkja", "Harpa Concert Hall", "Viking Museum"] },
+            { day: 2, title: "Golden Circle", activities: ["Thingvellir", "Geysir", "Gullfoss Waterfall"] },
+            { day: 3, title: "South Coast", activities: ["Seljalandsfoss", "Black Sand Beach", "Vik Village"] },
+            { day: 4, title: "Glacier Hike", activities: ["Skaftafell", "Ice Cave Tour", "Diamond Beach"] },
+            { day: 5, title: "Blue Lagoon", activities: ["Geothermal Spa", "Silica Mask", "Relaxation"] },
+            { day: 6, title: "Departure", activities: ["Last walk in Reykjavik", "Transfer"] }
+        ]
+    },
+    {
+        id: "sug-7",
+        title: "New York City Energy",
+        destination: "New York, USA",
+        description: "Experience the city that never sleeps with Broadway shows, museums, and iconic food.",
+        imageUrl: "https://images.unsplash.com/photo-1496442226666-8d4a0ee6d4df?q=80&w=2670&auto=format&fit=crop",
+        matchScore: 90,
+        status: "suggested",
+        dateRange: "Recommended: Apr - Jun",
+        stats: { duration: "5 Days", placesVisited: 15, distance: "20 km" },
+        itinerary: [
+            { day: 1, title: "Midtown", activities: ["Times Square", "Rockefeller Center", "MoMA"] },
+            { day: 2, title: "Downtown", activities: ["Statue of Liberty", "Wall Street", "9/11 Memorial"] },
+            { day: 3, title: "Brooklyn", activities: ["Brooklyn Bridge Walk", "DUMBO", "Williamsburg Food"] },
+            { day: 4, title: "Central Park", activities: ["The Met Museum", "Boathouse", "Fifth Avenue Shopping"] },
+            { day: 5, title: "Departure", activities: ["High Line Park", "Chelsea Market", "Airport Transfer"] }
+        ]
+    }
+];

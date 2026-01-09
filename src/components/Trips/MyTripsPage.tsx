@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { TripCard } from "./TripCard";
 import { TripItineraryModal } from "./TripItineraryModal";
-import { myTrips, suggestions, type Trip } from "./data";
+import { myTrips, suggestions, extraSuggestions, type Trip } from "./data";
 import { motion } from "framer-motion";
 import { useTrips } from "@/hooks/useTrips";
-import { Loader2, Calendar } from "lucide-react";
+import { Loader2, Calendar, Plus } from "lucide-react";
 
 export function MyTripsPage() {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const { trips: realTrips, loading } = useTrips();
+  const [displayedSuggestions, setDisplayedSuggestions] = useState<Trip[]>(suggestions);
 
   // Combine real trips (Firestore) with mock trips (Legacy)
   // We map real trips to match the Trip interface exactly if needed, 
@@ -52,6 +53,14 @@ export function MyTripsPage() {
     };
     setSelectedTrip(uiTrip);
     setModalOpen(true);
+  };
+
+  const handleSuggestMore = () => {
+    // Find next suggestion that isn't displayed
+    const nextSuggestion = extraSuggestions.find(s => !displayedSuggestions.find(d => d.id === s.id));
+    if (nextSuggestion) {
+      setDisplayedSuggestions(prev => [...prev, nextSuggestion]);
+    }
   };
 
   return (
@@ -120,7 +129,7 @@ export function MyTripsPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {suggestions.map((item) => (
+            {displayedSuggestions.map((item) => (
               <motion.div
                 key={item.id}
                 whileHover={{ scale: 1.02 }}
@@ -153,6 +162,21 @@ export function MyTripsPage() {
                 </div>
               </motion.div>
             ))}
+
+            {/* Suggest More Card */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="group h-[250px] rounded-2xl border-2 border-dashed border-white/10 bg-white/5 hover:border-teal-500/50 hover:bg-white/10 transition-all cursor-pointer flex flex-col items-center justify-center gap-4"
+              onClick={handleSuggestMore}
+            >
+              <div className="p-4 rounded-full bg-teal-500/10 text-teal-400 group-hover:bg-teal-500/20 transition-colors">
+                <Plus className="w-8 h-8" />
+              </div>
+              <div className="text-center">
+                <h3 className="font-serif text-lg text-white group-hover:text-teal-300 transition-colors">Suggest More</h3>
+                <p className="text-sm text-zinc-500">Find new adventures</p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
